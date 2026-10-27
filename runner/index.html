@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>跑者充電島</title>
+<script>document.documentElement.classList.add("js")</script>
+<meta name="description" content="一座會隨時間亮起來的社群群島">
+<meta name="theme-color" content="#14213d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="跑者充電島｜來島上逛逛">
+<meta property="og:description" content="看看這座島什麼時候最熱鬧、測測你是哪一型島民，再上島一起聊。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<style>
+:root{
+  --font:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  --ink:#1d2433;--ink-2:#4a5468;--ink-3:#8a93a6;--paper:#fffaf1;--card:#ffffff;--line:#ece4d6;
+  --red:#e8412c;--orange:#ff8a3d;--yellow:#ffcf3f;--teal:#12a594;--navy:#14213d;
+  --shadow:0 10px 30px rgba(20,33,61,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#eef1f6;--ink-2:#c3cad6;--ink-3:#8f99ab;--paper:#171f2e;--card:#202a3c;--line:#2d394f;--shadow:0 10px 30px rgba(0,0,0,.45);
+}}
+:root[data-theme="dark"]{--ink:#eef1f6;--ink-2:#c3cad6;--ink-3:#8f99ab;--paper:#171f2e;--card:#202a3c;--line:#2d394f;--shadow:0 10px 30px rgba(0,0,0,.45)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#14213d;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transparent}
+#stage{position:fixed;inset:0}
+#stage canvas{display:block;touch-action:none}
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.isl{position:absolute;left:0;top:0;display:flex;align-items:center;gap:6px;padding:3px 10px 3px 3px;border:0;border-radius:99px;background:#fffffff0;color:#1d2433;box-shadow:0 4px 14px #14213d40;font:800 13px/1 var(--font);white-space:nowrap;cursor:pointer;pointer-events:auto;transition:box-shadow .2s,opacity .3s}
+.isl .ic{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#fff3d6;font-size:15px}
+.isl .heat{width:28px;height:5px;border-radius:3px;background:#e9edf3;overflow:hidden}
+.isl .heat i{display:block;height:100%;background:linear-gradient(90deg,#ffcf3f,#ff6b4a);transition:width .5s}
+.isl.sel{box-shadow:0 0 0 3px #ffcf3f,0 6px 18px #14213d55}
+.isl.got .ic{background:#ffe08a}
+.isl.soon{background:#eceef2e8;color:#687187}
+.top{position:fixed;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;z-index:20;display:flex;align-items:center;gap:10px;pointer-events:none}
+.top>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:9px;padding:5px 14px 5px 5px;border-radius:16px;background:#fffffff2;color:#1d2433;box-shadow:0 6px 18px #14213d29;min-width:0}
+.brand>div:last-child{min-width:0}
+.logo{flex:none;display:grid;place-items:center;width:36px;height:40px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,#ff8a4c,#e8412c 70%);color:#fff;font-weight:900;font-size:17px}
+.brand b{display:block;font-size:17px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{display:block;font-size:11px;font-weight:700;color:#8a93a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.count{flex:none;margin-left:auto;display:flex;align-items:baseline;gap:5px;padding:8px 13px;border-radius:14px;background:#fffffff2;color:#1d2433;box-shadow:0 6px 18px #14213d29}
+.count b{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums}
+.count small{font-size:12px;font-weight:700;color:#4a5468}
+.dock{position:fixed;top:calc(68px + env(safe-area-inset-top));left:12px;right:12px;z-index:20;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.dock::-webkit-scrollbar{display:none}
+.dk{flex:none;display:flex;align-items:center;gap:5px;height:36px;padding:0 13px;border:0;border-radius:99px;background:#fffffff2;color:#1d2433;box-shadow:0 3px 10px #14213d29;font-weight:800;font-size:14px;cursor:pointer}
+.dk.primary{background:linear-gradient(180deg,#ff7448,#e8412c);color:#fff;box-shadow:0 3px #b52a17}
+.dk em{font-style:normal;display:grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e8412c;color:#fff;font-size:11px;font-weight:900}
+.panel{position:fixed;z-index:15;background:var(--paper);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden}
+.grab{height:22px;cursor:grab;touch-action:none;flex:none}
+.grab i{display:block;width:42px;height:5px;margin:9px auto 0;border-radius:3px;background:#d6ccb8}
+.timebar{padding:4px 14px 2px;border-bottom:1px solid var(--line);flex:none}
+.tb-row{display:flex;align-items:center;gap:8px}
+.days{display:flex;gap:3px}
+.days button{width:28px;height:28px;border:0;border-radius:8px;background:var(--line);font-size:12.5px;font-weight:800;color:var(--ink-2);cursor:pointer}
+.days button.on{background:var(--navy);color:#fff}
+.tb-time{flex:1;font-size:16px;font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tb-time small{font-size:12px;font-weight:700;color:var(--ink-3);margin-left:4px}
+.tb-play{flex:none;width:34px;height:30px;border:0;border-radius:10px;background:linear-gradient(180deg,#ff7448,#e8412c);color:#fff;font-size:12px;cursor:pointer;box-shadow:0 2px #b52a17}
+.tb-play.on{background:var(--navy);box-shadow:0 2px #000}
+.range{-webkit-appearance:none;appearance:none;display:block;width:100%;height:12px;margin:9px 0 4px;border-radius:99px;outline:none;cursor:pointer;
+  background:linear-gradient(90deg,#1f2b56,#1f2b56 20%,#ffcf9e 26%,#bfe3ff 38%,#bfe3ff 66%,#ffb27a 74%,#5b4b7e 80%,#1f2b56 88%,#1f2b56)}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid #e8412c;box-shadow:0 2px 8px #0000004d}
+.range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid #e8412c}
+.ticks{position:relative;height:18px;font-size:10.5px;font-weight:700;color:var(--ink-3);margin:0 12px}
+.ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.pb{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 16px calc(24px + env(safe-area-inset-bottom))}
+.pb h2{margin:0 0 6px;font-size:20px;font-weight:900;line-height:1.4}
+.pb h2 b{color:var(--red);font-size:26px}
+.kicker{margin:0 0 4px;font-size:12px;font-weight:800;color:var(--red)}
+.lead{margin:0 0 12px;font-size:13.5px;line-height:1.65;color:var(--ink-2)}
+.hero{padding:14px;border-radius:18px;background:linear-gradient(140deg,#fff3dc,#ffe2cf);color:#1d2433}
+.hero .lead{color:#4a5468;margin:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stats div{padding:10px 6px;border-radius:13px;background:var(--card);text-align:center}
+.stats b{display:block;font-size:19px;font-weight:900;font-variant-numeric:tabular-nums}
+.stats span{font-size:11px;color:var(--ink-3);font-weight:700}
+.stats .up{display:block;font-size:10.5px;color:var(--red);font-weight:800}
+.sec{margin-top:18px}
+.sec h3{margin:0 0 8px;font-size:15px;font-weight:900}
+.sec h3 small{margin-left:4px;font-size:12px;font-weight:600;color:var(--ink-3)}
+.rows{display:grid;gap:7px}
+.row{display:grid;grid-template-columns:4em 1fr 3em;align-items:center;gap:8px;font-size:13px}
+.row .rl{font-weight:700}
+.rb{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.rb i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ffbd73,#ff6b4a)}
+.rv{text-align:right;font-weight:800;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.cards{display:grid;gap:8px}
+.icard{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;width:100%;padding:9px 11px 9px 9px;border:0;border-radius:16px;background:var(--card);box-shadow:0 1px var(--line);text-align:left;cursor:pointer}
+.icard .ic{display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:#fff3d6;font-size:23px}
+.icard b{display:block;font-size:15px;font-weight:900}
+.icard small{display:block;font-size:12px;color:var(--ink-3)}
+.icard .n{font-size:18px;font-weight:900;color:var(--red);text-align:right;line-height:1.1}
+.icard .n small{font-size:10px;font-weight:700}
+.icard.soon{opacity:.6}
+.tip{margin:14px 0 0;padding:10px 12px;border-left:4px solid var(--yellow);border-radius:4px 12px 12px 4px;background:#fff7de;color:#4a3a10;font-size:13px;line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:99px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line);font-size:13px;font-weight:700}
+.chip b{color:var(--red)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border:0;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line);font:800 14.5px/1.2 var(--font);color:var(--ink);cursor:pointer;text-decoration:none}
+.btn.primary{background:linear-gradient(180deg,#ff7448,#e8412c);color:#fff;box-shadow:0 3px #b52a17}
+.cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.back{border:0;background:none;color:var(--red);font-weight:800;font-size:13px;padding:0;margin-bottom:8px;cursor:pointer}
+.note{margin:22px 0 0;font-size:11.5px;line-height:1.6;color:var(--ink-3)}
+.modal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:20px}
+.modal[hidden]{display:none}
+.mbg{position:absolute;inset:0;background:#14162870;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.mcard{position:relative;width:100%;max-width:420px;max-height:calc(100dvh - 40px);overflow-y:auto;padding:24px 20px 20px;border-radius:24px;background:var(--paper);box-shadow:0 24px 60px #0a0e1e59;animation:pop .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}}
+.mx{position:absolute;right:12px;top:12px;width:34px;height:34px;border:0;border-radius:50%;background:var(--line);font-size:20px;cursor:pointer}
+.mcard h2{margin:0 40px 6px 0;font-size:21px;font-weight:900}
+.intro ul{padding:0;margin:14px 0}
+.intro li{display:flex;gap:12px;margin:12px 0;list-style:none}
+.intro li>span{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#fff0d6;font-size:21px}
+.intro li p{margin:0;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+.intro li b{display:block;font-size:15px;color:var(--ink)}
+.q{font-weight:800;font-size:17px;margin:6px 0 12px}
+.opts{display:grid;gap:8px}
+.opt{all:unset;cursor:pointer;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px}
+.opt:hover{border-color:var(--red)}
+.res{text-align:center}
+.res .big{font-size:58px;line-height:1.1}
+.res h3{font-size:25px;margin:6px 0 4px;font-weight:900}
+.res p{margin:4px 0;color:var(--ink-2);font-size:14px;line-height:1.6}
+.res .kin{color:var(--ink);font-weight:800}
+.share-img{display:block;width:100%;max-width:260px;margin:12px auto 4px;border-radius:16px;box-shadow:0 10px 30px #14213d33}
+.joinbox input{width:100%;box-sizing:border-box;margin:14px 0 4px;padding:12px;border:1px solid var(--line,#e5d9cc);border-radius:12px;font:600 14px/1.4 ui-monospace,monospace;color:inherit;background:transparent}
+.hint{margin:10px 0 0;font-size:13px;opacity:.75;line-height:1.6}
+.phrase{margin:16px 0 6px;padding:22px 16px;border-radius:18px;background:linear-gradient(140deg,#fff3dc,#ffe2cf);color:#1d2433;text-align:center;animation:flip .5s ease}
+@keyframes flip{from{transform:rotateY(90deg)}}
+.phrase .jp{font-size:26px;font-weight:900;letter-spacing:1px}
+.phrase .kana{font-size:13px;color:#8a6a3a;margin-top:2px}
+.phrase .zh{font-size:15px;font-weight:700;margin-top:10px}
+.phrase .use{font-size:12.5px;color:#6a5a3a;margin-top:6px}
+.passport{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stamp{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;align-content:center;border:3px dashed var(--line);color:var(--ink-3);font-size:12px;font-weight:800;text-align:center;padding:4px}
+.stamp span{font-size:26px;filter:grayscale(1);opacity:.5}
+.stamp.got{border:3px solid #d7263d;color:#d7263d;transform:rotate(-8deg);background:#fff6f2}
+.stamp.got span{filter:none;opacity:1}
+.toast{position:fixed;left:50%;top:calc(116px + env(safe-area-inset-top));z-index:50;transform:translateX(-50%);padding:10px 16px;border-radius:99px;background:#14213ded;color:#fff;font-size:13.5px;font-weight:800;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1}
+#loader{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 10%,#ffd9a8,#ff8a5c 38%,#3b2a6b);color:#fff;text-align:center;transition:opacity .8s,visibility .8s}
+#loader.done{opacity:0;visibility:hidden}
+#loader h1{margin:0 0 6px;font-size:clamp(30px,9vw,46px);font-weight:900;letter-spacing:clamp(1px,.6vw,4px);text-shadow:0 4px 0 #c2410c}
+#loader>div{padding:0 16px;max-width:100vw;box-sizing:border-box}
+#loader p{margin:0;font-weight:700;opacity:.9}
+/* 不能跑 JS 的地方（Lark 預覽是嚴格 CSP，頁面自己的 script 全被擋）只看得到這張靜態卡 */
+#loader .ld-msg{display:none}.js #loader .ld-msg{display:block}.js #loader .ld-static{display:none}
+.ld-static{box-sizing:border-box;max-width:min(440px,calc(100vw - 32px));margin:18px auto 0;padding:16px 18px;border-radius:18px;background:#ffffff26;backdrop-filter:blur(6px);font-size:15px;line-height:1.7;font-weight:700}
+.ld-static b{font-size:22px}.ld-static small{display:block;margin-top:10px;font-weight:600;opacity:.92}
+.ld-static a{color:#fff;word-break:break-all}
+@media (max-width:760px){
+  .panel{left:0;right:0;bottom:0;height:44dvh;border-radius:22px 22px 0 0;transition:height .3s cubic-bezier(.2,.8,.2,1)}
+  .panel.tall{height:84dvh}
+  .panel.short{height:128px}
+}
+@media (min-width:761px){
+  .panel{left:16px;top:120px;bottom:16px;width:380px;border-radius:22px}
+  .grab{display:none}
+  .dock{right:auto}
+  .top{left:16px;right:16px}
+}
+@media (prefers-reduced-motion:reduce){.mcard,.phrase{animation:none}}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="labels"></div>
+
+<header class="top">
+  <div class="brand"><div class="logo" id="logoCh">島</div><div><b id="brandName"></b><small id="brandSub"></small></div></div>
+  <div class="count"><b id="cnt">0</b><small>位島民</small></div>
+</header>
+<nav class="dock">
+  <button class="dk primary" id="bQuiz">🧭 我是哪種島民</button>
+  <button class="dk" id="bPhrase">🎴 抽今日一句</button>
+  <button class="dk" id="bPass">📒 護照 <em id="passN">0</em></button>
+  <button class="dk" id="bShare">📤 分享</button>
+</nav>
+
+<aside class="panel" id="panel">
+  <div class="grab" id="grab"><i></i></div>
+  <div class="timebar">
+    <div class="tb-row">
+      <div class="days" id="days"></div>
+      <div class="tb-time" id="tbTime"></div>
+      <button class="tb-play" id="play" aria-label="播放一整天">▶</button>
+    </div>
+    <input class="range" id="hour" type="range" min="0" max="23" step="1" aria-label="時段">
+    <div class="ticks"><span style="left:0">0</span><span style="left:30.4%">早上 7</span><span style="left:52.2%">中午 12</span><span style="left:69.6%">下午 4</span><span style="left:87%">晚上 8</span><span style="left:100%">23</span></div>
+  </div>
+  <div class="pb" id="pb"></div>
+</aside>
+
+<div class="modal" id="modal" hidden><div class="mbg" data-close></div><div class="mcard"><button class="mx" data-close aria-label="關閉">×</button><div id="mbody"></div></div></div>
+<div class="toast" id="toast"></div>
+<div id="loader"><div><h1 id="ldName">跑者充電島</h1><p class="ld-msg">正在填海造島…</p><div class="ld-static"><b>204</b> 位島民 ・ 最熱鬧 週三 10:00<br>加入社群：<a href="https://line.me/ti/g2/aWgkU9OMGvCDJy6pTCejNRzgaPB6yosiMXKkew" target="_blank" rel="noopener">https://line.me/ti/g2/aWgkU9OMGvCDJy6pTCejNRzgaPB6yosiMXKkew</a><small>這是互動島（3D 群島、時間軸、島民測驗）。在 Lark 裡只能看到這張卡，請按右上角「下載」後用瀏覽器開啟。</small></div></div></div>
+
+<script>window.ISLAND_DATA = {"case": "運動趣｜跑者充電站", "island": "跑者充電島", "join_url": "https://line.me/ti/g2/aWgkU9OMGvCDJy6pTCejNRzgaPB6yosiMXKkew", "app_url": "", "phrases": false, "loyalty": [], "loyalty30": {}, "community": {"as_of": "2026-10-26", "speakers": 204, "active14": 48, "joined30": 53, "tags": {"好奇寶寶": 26, "破風手": 39, "聯繫員": 13, "推銷員": 3, "追隨者": 79}}, "chat": {"as_of": "2026-10-26", "days": 28, "grid": {"1-6": 6, "1-7": 9, "1-10": 14, "1-12": 8, "1-13": 5, "1-15": 8, "1-17": 10, "1-19": 5, "1-21": 6, "2-10": 49, "2-13": 8, "2-14": 27, "2-15": 6, "2-16": 23, "2-17": 14, "2-19": 4, "2-20": 12, "3-10": 23, "3-11": 31, "3-13": 18, "3-15": 5, "3-16": 9, "3-17": 9, "3-18": 17, "3-19": 5, "3-20": 23, "3-21": 13, "4-6": 2, "4-7": 1, "4-9": 1, "4-10": 21, "4-14": 13, "4-16": 3, "4-18": 16, "4-21": 13, "5-7": 2, "6-22": 1, "0-6": 2, "0-7": 2, "0-9": 1, "0-10": 15, "0-11": 7, "0-13": 1, "0-14": 4, "0-17": 4, "0-18": 27, "0-19": 1, "0-21": 10, "0-22": 10, "1-14": 8, "1-18": 2, "2-8": 3, "2-9": 7, "2-11": 16, "2-18": 7, "3-6": 2, "3-22": 3, "4-22": 7, "5-8": 4, "6-15": 8, "0-12": 4, "1-0": 1, "1-2": 1, "1-3": 1, "1-4": 3, "1-5": 2, "1-8": 8, "1-9": 26, "1-11": 1, "1-16": 1, "1-22": 17, "2-5": 1, "2-7": 5, "2-21": 6, "2-23": 7, "3-7": 7, "3-8": 1, "3-12": 28, "3-14": 8, "3-23": 2, "4-11": 4, "4-12": 4, "4-15": 3, "5-5": 1, "5-6": 3, "5-12": 6, "5-14": 12, "5-18": 4, "6-12": 3, "6-13": 2, "6-16": 2, "6-20": 1, "6-21": 5, "0-16": 2, "0-23": 1, "1-20": 20, "1-23": 6, "2-6": 1, "2-12": 9, "2-22": 1, "3-9": 2, "4-13": 1, "4-17": 4, "4-20": 18, "4-23": 4, "5-9": 5, "5-13": 12, "5-17": 3, "5-21": 1, "5-22": 3, "6-4": 15, "6-5": 3, "6-8": 2, "6-9": 18, "6-10": 5, "6-11": 9, "6-14": 2, "6-18": 3, "0-8": 4, "0-20": 4}, "speakers": 58, "region": {"北部": 2, "中部": 2}, "region_tagged": 4}};</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const D = window.ISLAND_DATA;
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n || 0).toLocaleString("zh-TW");
+const L = D.loyalty || [], last = L[L.length - 1] || null, prev = L.length > 7 ? L[L.length - 8] : null;
+const C = D.community || {}, CH = D.chat || {}, L30 = D.loyalty30 || {};
+const HAS_LOY = !!last;
+const members = Math.max(HAS_LOY ? last.members : 0, C.speakers || 0, CH.speakers || 0);  // 系統會員與群組說過話的人取大，島民不低報
+const newWeek = HAS_LOY && prev ? last.members - prev.members : Math.round((C.joined30 || 0) / 4);
+const WD = ["一", "二", "三", "四", "五", "六", "日"];
+const grid = CH.grid || {};
+const gmax = Math.max(1, ...Object.values(grid));
+const heatAt = (w, h) => (grid[`${w}-${h}`] || 0) / gmax;
+const peak = Object.entries(grid).sort((a, b) => b[1] - a[1])[0];
+const [peakW, peakH] = peak ? peak[0].split("-").map(Number) : [1, 20];
+const dayHeat = w => Array.from({length: 24}, (_, h) => grid[`${w}-${h}`] || 0);
+
+document.title = D.island;
+$("brandName").textContent = D.island;
+$("brandSub").textContent = D.case;
+$("ldName").textContent = D.island;
+$("logoCh").textContent = [...D.island][0];
+
+// ── 島的定義：一座島＝島上的一件事 ───────────────────
+const ISL = [
+  {id: "plaza", name: "島民廣場", ic: "🏘️", pos: [0, 0], r: 3, kind: "plaza"},
+  {id: "dock", name: "新手碼頭", ic: "⛵", pos: [-10.5, 6.5], r: 2, kind: "dock"},
+  {id: "shrine", name: "打卡神社", ic: "⛩️", pos: [10.5, 5.5], r: 2, kind: "shrine", soon: !HAS_LOY},
+  {id: "market", name: "福利社市集", ic: "🎁", pos: [9.5, -7], r: 2, kind: "market", soon: !HAS_LOY},
+  {id: "tower", name: "週" + WD[peakW] + "燈塔", ic: "🗼", pos: [-9, -7.5], r: 1, kind: "tower"},
+];
+const byId = Object.fromEntries(ISL.map(i => [i.id, i]));
+
+// ── three.js 場景 ───────────────────────────────────
+const renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
+renderer.setPixelRatio(Math.min(2, devicePixelRatio));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+$("stage").appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x9fd4ff, 70, 140);
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 400);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI * 0.42;
+controls.minPolarAngle = Math.PI * 0.12;
+controls.minDistance = 14; controls.maxDistance = 75;
+controls.enablePan = false;
+
+const hemi = new THREE.HemisphereLight(0xffffff, 0x3b6b8a, 1.1); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 1.6);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, {left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 120});
+scene.add(sun, sun.target);
+const plazaLight = new THREE.PointLight(0xffb45a, 0, 16, 1.6); plazaLight.position.set(0, 3.5, 0); scene.add(plazaLight);
+
+const R = (() => { let s = [...D.case].reduce((a, c) => a * 31 + c.charCodeAt(0) | 0, 7); return () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; })();
+const M = c => new THREE.MeshStandardMaterial({color: c, roughness: .85, flatShading: true});
+const mats = {grass: [M(0x6cbf6a), M(0x5fb25f), M(0x79c873)], sand: M(0xead7a4), rock: M(0x8b6b4a), rockD: M(0x6e5236),
+  wall: M(0xf4ecdf), wood: M(0xa8753f), red: M(0xd6402e), white: M(0xf5f2ea), trunk: M(0x7a5232), leaf: [M(0x3f8f4f), M(0x4f9f57), M(0x2f7a47)],
+  roof: [M(0xd9573b), M(0x3f6f9c), M(0xe79b45), M(0x9c4a6a)], stone: M(0xb9b3a8), yellow: M(0xf2b21b),
+  gold: new THREE.MeshStandardMaterial({color: 0xf2c14e, metalness: .5, roughness: .35, emissive: 0x6b4a00, emissiveIntensity: .3})};
+const winMat = new THREE.MeshStandardMaterial({color: 0x2a3240, emissive: 0xffc861, emissiveIntensity: 0});
+// 夜裡亮燈的房子罩一圈暖光（疊加貼圖，比加點光源省效能）
+const glowTex = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
+  const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, "#ffd88aff"); g.addColorStop(.35, "#ffb45a88"); g.addColorStop(1, "#ffb45a00");
+  x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+const glowMat = new THREE.SpriteMaterial({map: glowTex, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 0});
+const winOff = new THREE.MeshStandardMaterial({color: 0x3a4454});
+
+// 海
+const seaGeo = new THREE.PlaneGeometry(260, 260, 80, 80); seaGeo.rotateX(-Math.PI / 2);
+const sea = new THREE.Mesh(seaGeo, new THREE.MeshStandardMaterial({color: 0x2f86c4, roughness: .35, metalness: .1, flatShading: true}));
+sea.receiveShadow = true; scene.add(sea);
+const seaBase = seaGeo.attributes.position.array.slice();
+
+// 六角格島
+const HEX = 1.0, hexGeo = new THREE.CylinderGeometry(HEX, HEX, 1, 6);
+const axialToXZ = (q, r) => [HEX * Math.sqrt(3) * (q + r / 2), HEX * 1.5 * r];
+const islands = {}, pickables = [];
+function buildIsland(def) {
+  const g = new THREE.Group(); g.position.set(def.pos[0], 0, def.pos[1]); scene.add(g);
+  const tiles = [], N = def.r;
+  for (let q = -N; q <= N; q++) for (let r = Math.max(-N, -q - N); r <= Math.min(N, -q + N); r++) {
+    const ring = Math.max(Math.abs(q), Math.abs(r), Math.abs(-q - r));
+    const [x, z] = axialToXZ(q, r), edge = ring === N && N > 1;
+    const h = edge ? 0.55 : 0.9 + R() * 0.25;
+    const m = new THREE.Mesh(hexGeo, edge ? mats.sand : mats.grass[(q * 7 + r * 3 + 99) % 3]);
+    m.scale.set(.98, h, .98); m.position.set(x, h / 2, z); m.castShadow = m.receiveShadow = true; g.add(m);
+    const base = new THREE.Mesh(hexGeo, (q + r) % 2 ? mats.rock : mats.rockD);
+    base.scale.set(.96, 1.4, .96); base.position.set(x, -0.6, z); g.add(base);
+    if (!edge) tiles.push({x, z, y: h});
+    else if (R() < .25 && !def.soon) addTree(g, x, h, z, .6);
+  }
+  const hit = new THREE.Mesh(new THREE.CylinderGeometry(HEX * (N + 1) * 1.7, HEX * (N + 1) * 1.7, 3, 6), new THREE.MeshBasicMaterial({visible: false}));
+  hit.position.y = 1; hit.userData.id = def.id; g.add(hit); pickables.push(hit);
+  return islands[def.id] = {def, g, tiles: tiles.map(t => [R(), t]).sort((a, b) => a[0] - b[0]).map(x => x[1])};
+}
+function addTree(g, x, y, z, s = 1) {
+  const t = new THREE.Mesh(new THREE.CylinderGeometry(.07 * s, .1 * s, .5 * s, 5), mats.trunk); t.position.set(x, y + .25 * s, z); g.add(t);
+  const l = new THREE.Mesh(new THREE.ConeGeometry(.42 * s, 1.1 * s, 6), mats.leaf[Math.floor(R() * 3)]); l.position.set(x, y + .95 * s, z); l.castShadow = true; g.add(l);
+}
+const windows = [];
+function addHouse(g, x, y, z, s = 1) {
+  const w = .62 * s, h = .55 * s + R() * .3 * s;
+  const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, w), mats.wall); body.position.set(x, y + h / 2, z); body.castShadow = true; g.add(body);
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(w * .82, .45 * s, 4), mats.roof[Math.floor(R() * 4)]); roof.position.set(x, y + h + .22 * s, z); roof.rotation.y = Math.PI / 4; roof.castShadow = true; g.add(roof);
+  const win = new THREE.Mesh(new THREE.PlaneGeometry(.18 * s, .18 * s), winOff); win.position.set(x, y + h * .55, z + w / 2 + .01); g.add(win);
+  const win2 = win.clone(); win2.position.set(x + w / 2 + .01, y + h * .55, z); win2.rotation.y = Math.PI / 2; g.add(win2);
+  const glow = new THREE.Sprite(glowMat); glow.scale.setScalar(1.7 * s); glow.position.set(x, y + h * .6, z); g.add(glow);
+  windows.push([win, win2, glow]);
+}
+
+// 廣場：房子數 ∝ 島民
+const plaza = buildIsland(byId.plaza);
+const HOUSES = Math.min((plaza.tiles.length - 1) * 2, Math.max(6, Math.round(members / 40)));
+const perHouse = Math.max(1, Math.round(members / HOUSES));
+const doubles = Math.max(0, HOUSES - (plaza.tiles.length - 1));
+plaza.tiles.forEach((t, i) => {
+  if (i === 0) { addTree(plaza.g, t.x, t.y, t.z, 1.8); return; }
+  if (i > HOUSES) { if (R() < .5) addTree(plaza.g, t.x, t.y, t.z, .8); return; }
+  if (i <= doubles) { addHouse(plaza.g, t.x - .3, t.y, t.z + .25, .7); addHouse(plaza.g, t.x + .3, t.y, t.z - .25, .7); }
+  else addHouse(plaza.g, t.x, t.y, t.z, 1);
+});
+// 碼頭
+const dock = buildIsland(byId.dock);
+dock.tiles.slice(0, 3).forEach(t => addHouse(dock.g, t.x, t.y, t.z, .9));
+for (let k = 0; k < 4; k++) { const p = new THREE.Mesh(new THREE.BoxGeometry(.55, .12, 1.0), mats.wood); p.position.set(-1.4 - k * .3, .45, 3.3 + k * .95); p.castShadow = true; dock.g.add(p); }
+// 神社
+const shrine = buildIsland(byId.shrine);
+function torii(g, x, y, z, s) {
+  const col = new THREE.CylinderGeometry(.09 * s, .1 * s, 1.5 * s, 8);
+  for (const dx of [-.55, .55]) { const c = new THREE.Mesh(col, mats.red); c.position.set(x + dx * s, y + .75 * s, z); c.castShadow = true; g.add(c); }
+  const top = new THREE.Mesh(new THREE.BoxGeometry(1.6 * s, .14 * s, .22 * s), mats.red); top.position.set(x, y + 1.55 * s, z); top.castShadow = true; g.add(top);
+  const mid = new THREE.Mesh(new THREE.BoxGeometry(1.3 * s, .1 * s, .16 * s), mats.red); mid.position.set(x, y + 1.25 * s, z); g.add(mid);
+}
+if (!byId.shrine.soon) {
+  const t0 = shrine.tiles[0]; torii(shrine.g, t0.x, t0.y, t0.z, 1.4);
+  const lanterns = Math.min(shrine.tiles.length - 1, Math.max(1, Math.round((last?.sub7 || 0) / 15)));
+  shrine.tiles.slice(1, 1 + lanterns).forEach(t => {
+    const s = new THREE.Mesh(new THREE.BoxGeometry(.3, .7, .3), mats.stone); s.position.set(t.x, t.y + .35, t.z); s.castShadow = true; shrine.g.add(s);
+    const l = new THREE.Mesh(new THREE.BoxGeometry(.24, .2, .24), winMat); l.position.set(t.x, t.y + .62, t.z); shrine.g.add(l);
+    const c = new THREE.Mesh(new THREE.ConeGeometry(.26, .2, 4), mats.stone); c.position.set(t.x, t.y + .82, t.z); c.rotation.y = Math.PI / 4; shrine.g.add(c);
+  });
+}
+// 市集
+const market = buildIsland(byId.market);
+const chests = [];
+if (!byId.market.soon) {
+  const stalls = Math.min(market.tiles.length, 4);
+  market.tiles.slice(0, stalls).forEach((t, i) => {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(.8, .5, .6), mats.wood); b.position.set(t.x, t.y + .25, t.z); b.castShadow = true; market.g.add(b);
+    const aw = new THREE.Mesh(new THREE.BoxGeometry(.95, .08, .75), mats.roof[i % 4]); aw.position.set(t.x, t.y + .95, t.z); aw.castShadow = true; market.g.add(aw);
+    for (const dx of [-.4, .4]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .45, 4), mats.wood); p.position.set(t.x + dx, t.y + .7, t.z + .3); market.g.add(p); }
+  });
+  const nChest = Math.min(market.tiles.length - stalls, Math.max(1, Math.round((last?.red7 || 0) / 10)));
+  market.tiles.slice(stalls, stalls + nChest).forEach(t => { const c = new THREE.Mesh(new THREE.BoxGeometry(.45, .32, .32), mats.gold); c.position.set(t.x, t.y + .16, t.z); c.castShadow = true; c.userData.y = t.y + .16; market.g.add(c); chests.push(c); });
+}
+// 建設中（沒有忠誠系統的案）
+for (const id of ["shrine", "market"]) if (byId[id].soon) {
+  const g = islands[id].g, t = islands[id].tiles[0];
+  const crane = new THREE.Mesh(new THREE.BoxGeometry(.15, 2.4, .15), mats.yellow); crane.position.set(t.x, t.y + 1.2, t.z); g.add(crane);
+  const arm = new THREE.Mesh(new THREE.BoxGeometry(1.8, .12, .12), mats.yellow); arm.position.set(t.x + .7, t.y + 2.35, t.z); g.add(arm);
+  islands[id].tiles.slice(1, 4).forEach(s => { const b = new THREE.Mesh(new THREE.BoxGeometry(.5, .35, .5), mats.wood); b.position.set(s.x, s.y + .18, s.z); b.castShadow = true; g.add(b); });
+}
+// 燈塔
+const tower = buildIsland(byId.tower);
+const tw = new THREE.Group(); tower.g.add(tw); tw.position.y = 1;
+[0, 1, 2, 3].forEach(i => { const c = new THREE.Mesh(new THREE.CylinderGeometry(.42 - i * .05, .47 - i * .05, .65, 12), i % 2 ? mats.red : mats.white); c.position.y = .33 + i * .65; c.castShadow = true; tw.add(c); });
+const lamp = new THREE.Mesh(new THREE.CylinderGeometry(.3, .3, .4, 12), winMat); lamp.position.y = 2.9; tw.add(lamp);
+const cap = new THREE.Mesh(new THREE.ConeGeometry(.4, .45, 12), mats.red); cap.position.y = 3.32; tw.add(cap);
+const beam = new THREE.Mesh(new THREE.ConeGeometry(1.6, 12, 24, 1, true), new THREE.MeshBasicMaterial({color: 0xfff1b8, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending}));
+beam.geometry.translate(0, -6, 0); beam.rotation.z = Math.PI / 2;
+const beamPivot = new THREE.Group(); beamPivot.position.y = 2.9; beamPivot.add(beam); tw.add(beamPivot);
+const towerLight = new THREE.PointLight(0xffd36b, 0, 14); towerLight.position.y = 2.9; tw.add(towerLight);
+
+// 雲
+const cloudMat = new THREE.MeshStandardMaterial({color: 0xffffff, roughness: 1, flatShading: true, transparent: true, opacity: .92});
+const clouds = [];
+for (let i = 0; i < 9; i++) {
+  const c = new THREE.Group();
+  for (let j = 0; j < 4; j++) { const s = new THREE.Mesh(new THREE.IcosahedronGeometry(.9 + R() * .9, 0), cloudMat); s.position.set(j * 1.1 - 1.6, R() * .5, R() * .8); c.add(s); }
+  c.position.set(-40 + R() * 80, 9 + R() * 5, -40 + R() * 70); c.userData.v = .15 + R() * .25; scene.add(c); clouds.push(c);
+}
+
+// 船：本週新島民
+const boats = [];
+const nBoats = Math.max(newWeek > 0 ? 1 : 0, Math.min(8, Math.round(newWeek / 10)));
+for (let i = 0; i < nBoats; i++) {
+  const b = new THREE.Group();
+  b.add(new THREE.Mesh(new THREE.BoxGeometry(1.1, .3, .5), mats.white));
+  const sail = new THREE.Mesh(new THREE.ConeGeometry(.35, .9, 3), M(0xff8a3d)); sail.position.y = .6; b.add(sail);
+  b.userData = {a: i / nBoats * Math.PI * 2, rad: 5 + R() * 3.5, sp: .08 + R() * .06};
+  scene.add(b); boats.push(b);
+}
+
+// 光弧：島民從哪裡來（有設名牌的人）
+const REG_DIR = {"北部": [-26, -14], "中部": [-30, 6], "南部": [-20, 22], "東部": [6, 26], "海外": [30, 18]};
+const arcs = [];
+const regMax = Math.max(1, ...Object.values(CH.region || {}));
+for (const [reg, n] of Object.entries(CH.region || {})) {
+  const [sx, sz] = REG_DIR[reg] || [0, 30], [ex, ez] = byId.dock.pos;
+  const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(sx, .5, sz), new THREE.Vector3((sx + ex) / 2, 6 + n / regMax * 6, (sz + ez) / 2), new THREE.Vector3(ex, 1.2, ez));
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 48, .06 + n / regMax * .14, 6, false), new THREE.MeshBasicMaterial({color: 0xffb84d, transparent: true, opacity: .75})));
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(.22, 10, 10), new THREE.MeshBasicMaterial({color: 0xfff1b8})); scene.add(dot);
+  arcs.push({curve, dot, t: R()});
+}
+
+// ── 時間：星期 × 時段 ────────────────────────────────
+const now = new Date();
+const state = {w: (now.getDay() + 6) % 7, h: now.getHours(), playing: false, sel: null};
+// 當下太冷清就從最熱鬧的時段開場（第一眼要看到島亮著）
+if (peak && (grid[`${state.w}-${state.h}`] || 0) < peak[1] * .3) { state.w = peakW; state.h = peakH; }
+const SKY = [[0, 0x0b1a33], [5, 0x1f2b56], [6, 0xf7b58a], [8, 0x9fd4ff], [16, 0xa9d8ff], [18, 0xffb27a], [19, 0x5b4b7e], [20, 0x1f2b56], [24, 0x0b1a33]];
+const lerpSky = h => { for (let i = 0; i < SKY.length - 1; i++) if (h >= SKY[i][0] && h <= SKY[i + 1][0]) return new THREE.Color(SKY[i][1]).lerp(new THREE.Color(SKY[i + 1][1]), (h - SKY[i][0]) / (SKY[i + 1][0] - SKY[i][0])); return new THREE.Color(SKY[0][1]); };
+const dayAmt = h => Math.max(0, Math.sin((h - 6) / 13 * Math.PI));
+const PERIOD = h => h < 5 ? "深夜" : h < 7 ? "清晨" : h < 11 ? "早上" : h < 13 ? "中午" : h < 17 ? "下午" : h < 19 ? "傍晚" : h < 23 ? "晚上" : "深夜";
+function applyTime() {
+  const {w, h} = state, d = dayAmt(h), sky = lerpSky(h);
+  scene.background = sky; scene.fog.color = sky;
+  hemi.intensity = .35 + d * .85; sun.intensity = .15 + d * 1.6;
+  const a = (h - 6) / 12 * Math.PI; sun.position.set(Math.cos(a) * 40, Math.max(6, Math.sin(a) * 40), 18);
+  sun.color.set(d > .3 ? 0xffffff : 0xffc48a);
+  sea.material.color.set(d > .2 ? 0x2f86c4 : 0x173d63);
+  // 亮燈＝本週上島比例 ＋ 這個時段群裡的熱度
+  const heat = heatAt(w, h), weekShare = HAS_LOY ? last.a7 / last.members : (C.active14 || 0) / Math.max(1, members);
+  const litN = Math.round(windows.length * Math.min(1, weekShare * .6 + heat * .9));
+  windows.forEach(([a1, a2, gl], i) => { a1.material = a2.material = i < litN ? winMat : winOff; gl.visible = i < litN; });
+  winMat.emissiveIntensity = .6 + (1 - d) * 1.6; glowMat.opacity = (1 - d) * .85;
+  hemi.color.set(d > .3 ? 0xffffff : 0x9db4ff); hemi.intensity = .6 + d * .6;
+  plazaLight.intensity = (1 - d) * (1.5 + heat * 8);
+  const isPeak = w === peakW && h === peakH;
+  towerLight.intensity = (1 - d) * 3 + (isPeak ? 6 : 0); beam.material.opacity = (1 - d) * (.1 + (isPeak ? .14 : 0)); beam.visible = d < .6;
+  $("tbTime").innerHTML = `週${WD[w]} ${String(h).padStart(2, "0")}:00<small>${PERIOD(h)}</small>`;
+  $("hour").value = h;
+  document.querySelectorAll("#days button").forEach((b, i) => b.classList.toggle("on", i === w));
+  updateLabels(true);
+  if (!state.sel) renderHome();
+  else if (state.sel === "plaza") { const s = pb.scrollTop; pb.innerHTML = detail("plaza"); pb.scrollTop = s; }
+}
+$("days").innerHTML = WD.map((d, i) => `<button data-w="${i}">${d}</button>`).join("");
+$("days").onclick = e => { const b = e.target.closest("button"); if (b) { state.w = +b.dataset.w; applyTime(); } };
+$("hour").oninput = e => { state.h = +e.target.value; applyTime(); };
+let playT = null;
+$("play").onclick = () => {
+  state.playing = !state.playing; $("play").classList.toggle("on", state.playing); $("play").textContent = state.playing ? "❚❚" : "▶";
+  clearInterval(playT);
+  if (state.playing) playT = setInterval(() => { state.h = (state.h + 1) % 24; if (state.h === 0) state.w = (state.w + 1) % 7; applyTime(); }, 700);
+};
+
+// ── 標籤（HTML 疊在 3D 上）───────────────────────────
+const passport = (() => { try { return new Set(JSON.parse(localStorage.getItem("isl-pass-" + D.case) || "[]")); } catch { return new Set(); } })();
+const savePass = () => { try { localStorage.setItem("isl-pass-" + D.case, JSON.stringify([...passport])); } catch {} $("passN").textContent = passport.size; };
+savePass();
+const islHeat = id => {
+  const {w, h} = state, hh = heatAt(w, h);
+  return {plaza: hh, dock: Math.min(1, newWeek / 60), shrine: HAS_LOY ? Math.min(1, last.sub7 / 120) : 0,
+    market: HAS_LOY ? Math.min(1, last.red7 / 60) : 0, tower: (w === peakW && Math.abs(h - peakH) <= 1) ? 1 : hh * .5}[id];
+};
+ISL.forEach(def => {
+  const b = document.createElement("button");
+  b.className = "isl" + (def.soon ? " soon" : "");
+  b.innerHTML = `<span class="ic">${def.ic}</span>${def.name}${def.soon ? " · 即將開放" : `<span class="heat"><i></i></span>`}`;
+  b.onclick = () => select(def.id);
+  $("labels").appendChild(b); def.el = b;
+});
+const v3 = new THREE.Vector3();
+function updateLabels(heatOnly) {
+  ISL.forEach(def => {
+    const i = def.el.querySelector(".heat i"); if (i) i.style.width = Math.round(islHeat(def.id) * 100) + "%";
+    def.el.classList.toggle("sel", state.sel === def.id); def.el.classList.toggle("got", passport.has(def.id));
+    if (heatOnly) return;
+    v3.set(def.pos[0], def.kind === "tower" ? 5.4 : 3.2, def.pos[1]).project(camera);
+    def.el.style.transform = `translate(${(v3.x + 1) / 2 * innerWidth}px,${(1 - v3.y) / 2 * innerHeight}px) translate(-50%,-50%)`;
+    const y = (1 - v3.y) / 2 * innerHeight;
+    def.el.style.opacity = v3.z < 1 ? Math.max(0, Math.min(1, (y - 110) / 30)) : 0;  // 別壓在上排按鈕底下
+  });
+}
+
+// ── 面板內容 ─────────────────────────────────────────
+const pb = $("pb");
+const up = (a, b) => b != null && a > b ? `<span class="up">比上週多 ${fmt(a - b)}</span>` : "";
+function heroLine() {
+  const {w, h} = state, n = grid[`${w}-${h}`] || 0;
+  if (w === peakW && h === peakH) return `現在是全島最亮的時刻！<br>近 ${CH.days || 28} 天的週${WD[w]} ${h}:00，大家聊了 <b>${fmt(n)}</b> 則`;
+  if (n === 0) return `週${WD[w]} ${h}:00，島上大家都睡了 💤<br>最熱鬧的是週${WD[peakW]} ${peakH}:00`;
+  return `週${WD[w]} ${h}:00，島上熱度是最高峰的 <b>${Math.round(n / gmax * 100)}%</b>`;
+}
+const islandNum = id => ({plaza: [fmt(members), "島民"], dock: ["+" + fmt(newWeek), HAS_LOY ? "本週" : "每週"],
+  shrine: HAS_LOY ? [fmt(last.sub7), "次打卡"] : ["—", ""], market: HAS_LOY ? [fmt(last.red7), "次兌換"] : ["—", ""], tower: [`週${WD[peakW]}`, `${peakH}:00`]}[id]);
+const islandSub = id => ({plaza: "島民住的地方，燈亮＝有人在", dock: "新島民從這裡上岸", shrine: byId.shrine.soon ? "建設中，即將開放" : "每天打卡、完成任務",
+  market: byId.market.soon ? "建設中，即將開放" : "用點數換好禮", tower: "一週裡最熱鬧的一小時"}[id]);
+const card = d => { const [n, u] = islandNum(d.id); return `<button class="icard${d.soon ? " soon" : ""}" data-isl="${d.id}"><span class="ic">${d.ic}</span><span><b>${d.name}${passport.has(d.id) ? " ✅" : ""}</b><small>${islandSub(d.id)}</small></span><span class="n">${n}<small><br>${u}</small></span></button>`; };
+function renderHome() {
+  pb.innerHTML = `
+    <div class="hero"><p class="kicker">${D.island} · 時間軸上的這一刻</p><h2>${heroLine()}</h2>
+      <p class="lead">拉上面的時間軸，看島從清晨到深夜怎麼亮起來；點任何一座島，看那裡在發生什麼。</p></div>
+    <div class="stats">
+      <div><b>${fmt(members)}</b><span>位島民</span></div>
+      <div><b>${fmt(HAS_LOY ? last.a7 : C.active14)}</b><span>${HAS_LOY ? "本週上島" : "兩週內說過話"}</span>${HAS_LOY ? up(last.a7, prev?.a7) : ""}</div>
+      <div><b>+${fmt(newWeek)}</b><span>${HAS_LOY ? "本週新島民" : "每週新島民"}</span></div>
+    </div>
+    <div class="sec"><h3>五座島</h3><div class="cards">${ISL.map(card).join("")}</div></div>
+    <div class="cta"><button class="btn primary" data-act="quiz">🧭 測我是哪種島民</button>${D.join_url ? `<a class="btn" href="${D.join_url}" target="_blank" rel="noopener">⛵ 上島</a>` : ""}</div>
+    <p class="note">一棟房子 ≈ ${fmt(perHouse)} 位島民。數據更新：${last ? last.d : (CH.as_of || C.as_of || "")}。只呈現全島合計，不含任何個人資料。</p>`;
+}
+function spark(arr, mark) {
+  const mx = Math.max(1, ...arr), W = 340, H = 70, bw = W / 24;
+  return `<svg viewBox="0 0 ${W} ${H + 14}" width="100%" style="display:block;background:var(--card);border-radius:12px;padding:6px">${arr.map((v, h) => `<rect x="${h * bw + 1}" y="${H - Math.max(1.5, v / mx * (H - 4))}" width="${bw - 2}" height="${Math.max(1.5, v / mx * (H - 4))}" rx="2" fill="${h === mark ? "#e8412c" : "#ffbd73"}"/>`).join("")}${[0, 6, 12, 18, 23].map(h => `<text x="${h * bw + bw / 2}" y="${H + 12}" font-size="9" text-anchor="middle" fill="#8a93a6">${h}</text>`).join("")}</svg>`;
+}
+function detail(id) {
+  const d = byId[id], back = `<button class="back" data-act="home">← 回群島總覽</button>`;
+  const head = (t, lead) => `${back}<p class="kicker">${d.ic} ${d.name}</p><h2>${t}</h2><p class="lead">${lead}</p>`;
+  const roles = Object.entries(C.tags || {}).filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
+  if (id === "plaza") return head(`住著 <b>${fmt(members)}</b> 位島民`, `每一棟房子大約住 ${fmt(perHouse)} 位。窗戶亮著，代表那段時間有人在島上。`) +
+    `<div class="stats"><div><b>${fmt(HAS_LOY ? last.a7 : C.active14)}</b><span>${HAS_LOY ? "本週上島" : "兩週內說話"}</span></div><div><b>${fmt(CH.speakers)}</b><span>近 ${CH.days || 28} 天說過話</span></div><div><b>${HAS_LOY ? fmt(last.a1) : fmt(C.joined30)}</b><span>${HAS_LOY ? "今天上島" : "30 天新來"}</span></div></div>` +
+    `<div class="sec"><h3>週${WD[state.w]}的一天 <small>每小時大家聊天的熱度</small></h3>${spark(dayHeat(state.w), state.h)}</div>` +
+    (roles.length ? `<div class="sec"><h3>島上的角色 <small>活躍島民</small></h3><div class="chips">${roles.map(([t, n]) => `<span class="chip">${TYPES[t].e} ${t} <b>${fmt(n)}</b></span>`).join("")}</div></div>` : "") +
+    `<div class="tip">想知道你是哪一種？做 3 題小測驗，拿到你的島民身分卡。</div><div class="cta"><button class="btn primary" data-act="quiz">🧭 測我是哪種島民</button></div>`;
+  if (id === "dock") {
+    const reg = Object.entries(CH.region || {}).sort((a, b) => b[1] - a[1]), rm = Math.max(1, ...reg.map(r => r[1]));
+    return head(`${HAS_LOY ? "本週" : "每週大約"} <b>+${fmt(newWeek)}</b> 位新島民上岸`, HAS_LOY ? `近 30 天一共來了 ${fmt(L30.new30)} 位。海上的每一艘船，大約是 10 位新朋友。` : `近 30 天來了 ${fmt(C.joined30)} 位新朋友。`) +
+      (reg.length ? `<div class="sec"><h3>島民從哪裡來 <small>有設名牌的 ${fmt(CH.region_tagged)} 位</small></h3><div class="rows">${reg.map(([k, n]) => `<div class="row"><span class="rl">${k}</span><span class="rb"><i style="width:${n / rm * 100}%"></i></span><span class="rv">${fmt(n)}</span></div>`).join("")}</div><p class="lead" style="margin-top:8px">天上的光弧，就是大家從各地出發、來到碼頭的路。</p></div>` : "") +
+      (D.join_url ? `<div class="cta"><a class="btn primary" href="${D.join_url}" target="_blank" rel="noopener">⛵ 我也要上島</a></div>` : "");
+  }
+  if (id === "shrine") return d.soon ? head("神社還在蓋 🏗️", "這裡會是每天打卡、完成任務、累積點數的地方。開放後，每一盞石燈籠都是大家一起完成的任務。") :
+    head(`本週完成 <b>${fmt(last.sub7)}</b> 次任務`, `一盞石燈籠 ≈ 15 次打卡。近 30 天一共完成 ${fmt(L30.sub30)} 次。`) +
+    `<div class="stats"><div><b>${fmt(last.sub7)}</b><span>本週打卡</span>${up(last.sub7, prev?.sub7)}</div><div><b>${fmt(L30.sub30)}</b><span>30 天打卡</span></div><div><b>${fmt(L30.earned30)}</b><span>30 天發出點數</span></div></div>` +
+    (D.app_url ? `<div class="cta"><a class="btn primary" href="${D.app_url}" target="_blank" rel="noopener">⛩️ 去打卡</a></div>` : "");
+  if (id === "market") return d.soon ? head("市集還在蓋 🏗️", "這裡會是用點數換好禮的地方。開放後，每一個寶箱都是一次兌換。") :
+    head(`本週打開 <b>${fmt(last.red7)}</b> 個寶箱`, `島民用點數換到的好禮。一個寶箱 ≈ 10 次兌換，近 30 天一共 ${fmt(L30.red30)} 次。`) +
+    `<div class="stats"><div><b>${fmt(last.red7)}</b><span>本週兌換</span>${up(last.red7, prev?.red7)}</div><div><b>${fmt(L30.red30)}</b><span>30 天兌換</span></div><div><b>${fmt(L30.spent30)}</b><span>30 天用掉點數</span></div></div>` +
+    (D.app_url ? `<div class="cta"><a class="btn primary" href="${D.app_url}" target="_blank" rel="noopener">🎁 去換好禮</a></div>` : "");
+  if (id === "tower") return head(`每週${WD[peakW]} <b>${peakH}:00</b> 全島最亮`, `近 ${CH.days || 28} 天，這個時段大家在群裡聊了 ${fmt(grid[`${peakW}-${peakH}`])} 則，是一週裡最熱鬧的一小時。`) +
+    `<div class="sec"><h3>週${WD[peakW]}的一天</h3>${spark(dayHeat(peakW), peakH)}</div>` +
+    `<div class="cta"><button class="btn primary" data-act="jump">⏱ 把時間撥到週${WD[peakW]} ${peakH}:00</button></div>`;
+}
+pb.onclick = e => {
+  const c = e.target.closest("[data-isl]"); if (c) return select(c.dataset.isl);
+  const a = e.target.closest("[data-act]")?.dataset.act;
+  if (a === "home") select(null);
+  if (a === "quiz") openQuiz();
+  if (a === "jump") { state.w = peakW; state.h = peakH; applyTime(); select("tower"); }
+};
+
+// ── 選島：鏡頭飛過去、蓋章 ───────────────────────────
+let fly = null;
+const HOME_T = new THREE.Vector3(0, 0, 0);
+function select(id) {
+  state.sel = id;
+  const target = id ? new THREE.Vector3(byId[id].pos[0], 0, byId[id].pos[1]) : HOME_T.clone();
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  fly = {t: 0, fromT: controls.target.clone(), toT: target, fromP: camera.position.clone(), toP: target.clone().add(dir.multiplyScalar(id ? 20 : 46))};
+  if (id) {
+    pb.innerHTML = detail(id); pb.scrollTop = 0;
+    if (!passport.has(id) && !byId[id].soon) {
+      passport.add(id); savePass(); toast(`📒 護照蓋章：${byId[id].name}`);
+      if (passport.size === ISL.filter(i => !i.soon).length) setTimeout(() => { burst(); toast("🎉 你逛完整座群島，成為榮譽島民！"); }, 700);
+    }
+  } else renderHome();
+  $("panel").classList.remove("short");
+  updateLabels(true);
+}
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let down = null;
+renderer.domElement.addEventListener("pointerdown", e => down = [e.clientX, e.clientY]);
+renderer.domElement.addEventListener("pointerup", e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
+  ptr.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ptr, camera);
+  const h = ray.intersectObjects(pickables)[0]; if (h) select(h.object.userData.id);
+});
+
+// ── 測驗、今日一句、護照、分享 ───────────────────────
+const TYPES = {
+  "好奇寶寶": {e: "🔍", d: "看到新東西就想問「為什麼？」你的問題常常是全島最好的題目。"},
+  "破風手": {e: "⛵", d: "新話題一出現，你總是前三個留言的人。島上的熱鬧，常常是你起的頭。"},
+  "聯繫員": {e: "🌉", d: "你記得誰會什麼，會把對的人介紹給彼此。島民之間的橋都是你搭的。"},
+  "推銷員": {e: "📣", d: "好東西不藏私，朋友問你就推薦。很多新島民，是被你帶上島的。"},
+  "追隨者": {e: "🌱", d: "安靜但一直都在，每次活動都跟上。你是讓這座島穩穩運轉的人。"},
+};
+const QS = [
+  ["群裡跳出一個新話題，你通常會…", [["先問一個問題", "好奇寶寶"], ["馬上留言接話", "破風手"], ["tag 懂的朋友來看", "聯繫員"], ["默默看完、按個讚", "追隨者"]]],
+  ["學到一個超好用的東西，你會…", [["想知道它還能怎麼用", "好奇寶寶"], ["立刻分享給朋友", "推銷員"], ["丟到群裡讓大家試", "破風手"], ["先收藏，下次用", "追隨者"]]],
+  ["朋友說也想加入，你會…", [["直接把他拉進來", "推銷員"], ["介紹他認識群裡的高手", "聯繫員"], ["先問他想要什麼", "好奇寶寶"], ["分享你自己的經驗", "追隨者"]]],
+];
+// 「今日一句」：日語社群用日文短句；其他品牌之後換成品牌自己的小知識卡
+const PHRASES = [
+  ["なるほど", "naruhodo", "原來如此！", "聽懂別人說明時，點頭說這句最自然"],
+  ["お疲れ様です", "otsukaresama desu", "辛苦了", "下班、下課、結束一件事時都能用"],
+  ["よろしくお願いします", "yoroshiku onegaishimasu", "請多多指教", "第一次見面、拜託別人時的萬用句"],
+  ["いただきます", "itadakimasu", "我開動了", "吃飯前說，感謝食物與做飯的人"],
+  ["大丈夫です", "daijōbu desu", "沒問題／不用了", "店員問要不要袋子時，也可以這樣婉拒"],
+  ["すみません", "sumimasen", "不好意思", "道歉、叫店員、借過，一句全包"],
+  ["また明日", "mata ashita", "明天見", "朋友之間輕鬆的道別"],
+  ["頑張って", "ganbatte", "加油！", "替朋友打氣，考試前最常聽到"],
+  ["いいね", "ii ne", "不錯耶！", "看到朋友的照片或想法時的稱讚"],
+  ["どういたしまして", "dōitashimashite", "不客氣", "別人跟你說謝謝時的回應"],
+  ["おすすめは何ですか", "osusume wa nan desu ka", "有什麼推薦的嗎？", "在日本餐廳點餐時超好用"],
+  ["楽しかった", "tanoshikatta", "好開心！", "活動結束後跟大家分享心情"],
+];
+const modal = $("modal"), mbody = $("mbody");
+const openModal = html => { mbody.innerHTML = html; modal.hidden = false; };
+modal.addEventListener("click", e => { if (e.target.closest("[data-close]")) modal.hidden = true; });
+// 加入社群／會員系統：Lark 預覽的沙盒不准開新視窗（點了沒反應），開不了就改成顯示連結讓人複製到 LINE
+const EXT = {[D.join_url]: ["⛵ 加入島民", "這裡打不開 LINE，複製連結就能上島"], [D.app_url]: ["⛩️ 會員系統", "這裡打不開 LINE，複製連結去打卡、換好禮"]};
+document.addEventListener("click", e => {
+  const a = e.target.closest("a[href]");
+  const url = a && [D.join_url, D.app_url].find(u => u && new URL(u).href === a.href);
+  if (!url) return;
+  e.preventDefault();
+  let w = null;
+  try { w = window.open(url, "_blank"); } catch (err) {}
+  if (w) { try { w.opener = null; } catch (err) {} return; }
+  openModal(`<p class="kicker">${EXT[url][0]}</p><h2>${EXT[url][1]}</h2>
+    <div class="joinbox"><input id="joinUrl" readonly value="${url}"></div>
+    <div class="cta"><button class="btn primary" id="joinCopy">📋 複製連結</button></div>
+    <p class="hint">貼到 LINE 或手機瀏覽器打開；也可以下載這個檔，用瀏覽器開就能直接點。</p>`);
+  const inp = $("joinUrl"); inp.focus(); inp.select();
+  $("joinCopy").onclick = async () => {
+    inp.select();
+    let ok = false;
+    try { await navigator.clipboard.writeText(url); ok = true; } catch (err) { try { ok = document.execCommand("copy"); } catch (e2) {} }
+    $("joinCopy").textContent = ok ? "✅ 已複製" : "請長按上面的連結複製";
+  };
+}, true);
+let qi = 0, picks = [];
+function openQuiz() { qi = 0; picks = []; renderQ(); }
+function renderQ() {
+  if (qi >= QS.length) return renderResult();
+  const [q, opts] = QS[qi];
+  openModal(`<p class="kicker">第 ${qi + 1} / ${QS.length} 題</p><div class="q">${q}</div><div class="opts">${opts.map((o, k) => `<button class="opt" data-k="${k}">${o[0]}</button>`).join("")}</div>`);
+  mbody.querySelectorAll(".opt").forEach(b => b.onclick = () => { picks.push(opts[+b.dataset.k][1]); qi++; renderQ(); });
+}
+async function renderResult() {
+  const cnt = {}; picks.forEach(p => cnt[p] = (cnt[p] || 0) + 1);
+  const myType = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a] || picks.lastIndexOf(b) - picks.lastIndexOf(a))[0];
+  const t = TYPES[myType], kin = (C.tags || {})[myType] || 0;
+  modal.hidden = true;
+  const img = await shareCard(`${t.e} ${myType}`, kin ? `島上已經有 ${fmt(kin)} 位跟你同一型` : "你是哪一種島民？");
+  openModal(`<div class="res"><div class="big">${t.e}</div><h3>你是「${myType}」</h3><p>${t.d}</p>${kin ? `<p class="kin">島上已經有 ${fmt(kin)} 位活躍島民跟你同一型</p>` : ""}
+    <img class="share-img" src="${img}" alt="島民身分卡"><div class="cta" style="justify-content:center"><button class="btn primary" id="shMe">📤 分享身分卡</button>${D.join_url ? `<a class="btn" href="${D.join_url}" target="_blank" rel="noopener">⛵ 加入島民</a>` : ""}<button class="btn" id="again">再測一次</button></div></div>`);
+  burst();
+  $("shMe").onclick = () => share(`我在「${D.island}」是${t.e}${myType}！島上已經有 ${fmt(members)} 位島民，你是哪一型？`, img);
+  $("again").onclick = openQuiz;
+}
+function openPhrase() {
+  const p = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+  openModal(`<p class="kicker">🎴 今日一句</p><h2>抽到了！</h2><div class="phrase"><div class="jp">${p[0]}</div><div class="kana">${p[1]}</div><div class="zh">${p[2]}</div><div class="use">${p[3]}</div></div>
+    <div class="cta" style="justify-content:center"><button class="btn primary" id="again">再抽一張</button><button class="btn" id="shP">📤 分享這句</button></div>`);
+  $("again").onclick = openPhrase;
+  $("shP").onclick = () => share(`今天在「${D.island}」抽到：${p[0]}（${p[2]}）🎴 你也來抽一句！`);
+}
+function openPass() {
+  const open = ISL.filter(i => !i.soon);
+  openModal(`<p class="kicker">📒 島民護照</p><h2>逛過 ${[...passport].filter(id => byId[id] && !byId[id].soon).length} / ${open.length} 座島</h2><p class="lead">點每一座島就能蓋章，全部蓋滿成為榮譽島民。</p>
+    <div class="passport">${ISL.map(i => `<div class="stamp${passport.has(i.id) ? " got" : ""}"><span>${i.ic}</span>${i.soon ? "即將開放" : i.name}</div>`).join("")}</div>`);
+}
+$("bQuiz").onclick = openQuiz; $("bPhrase").onclick = openPhrase; $("bPass").onclick = openPass;
+if (!D.phrases) $("bPhrase").remove();  // 日語卡只給日語社群
+$("bShare").onclick = async () => share(HAS_LOY ? `「${D.island}」本週有 ${fmt(last.a7)} 位島民上島、完成 ${fmt(last.sub7)} 次任務 🏝 一起來逛！` : `「${D.island}」已經有 ${fmt(members)} 位島民 🏝 一起來逛！`,
+  await shareCard(D.island, `${fmt(members)} 位島民的群島`));
+
+async function shareCard(title, sub) {
+  renderer.render(scene, camera);
+  const shot = new Image(); shot.src = renderer.domElement.toDataURL("image/jpeg", .9);
+  try { await shot.decode(); } catch {}
+  const cv = document.createElement("canvas"); cv.width = 1080; cv.height = 1350; const x = cv.getContext("2d");
+  x.fillStyle = "#14213d"; x.fillRect(0, 0, 1080, 1350);
+  if (shot.width) { const s = Math.max(1080 / shot.width, 960 / shot.height), sw = 1080 / s, sh = 960 / s; x.drawImage(shot, (shot.width - sw) / 2, Math.max(0, (shot.height - sh) / 2 - shot.height * .08), sw, sh, 0, 0, 1080, 960); }
+  const g = x.createLinearGradient(0, 760, 0, 1350); g.addColorStop(0, "rgba(20,33,61,0)"); g.addColorStop(.3, "#14213d"); x.fillStyle = g; x.fillRect(0, 760, 1080, 590);
+  x.fillStyle = "#ffcf3f"; x.font = "800 40px 'Noto Sans TC',sans-serif"; x.fillText(D.island, 72, 1030);
+  x.fillStyle = "#fff"; x.font = "900 92px 'Noto Sans TC',sans-serif"; x.fillText(title, 72, 1140);
+  x.fillStyle = "#cfe0f2"; x.font = "700 40px 'Noto Sans TC',sans-serif"; x.fillText(sub, 72, 1205);
+  x.fillStyle = "#ff8a3d"; x.font = "800 34px 'Noto Sans TC',sans-serif"; x.fillText("你是哪一種島民？來測測看 →", 72, 1290);
+  return cv.toDataURL("image/png");
+}
+async function share(text, img) {
+  const url = location.href;
+  try {
+    if (img && navigator.canShare) {
+      const file = new File([await (await fetch(img)).blob()], "island.png", {type: "image/png"});
+      if (navigator.canShare({files: [file]})) { await navigator.share({files: [file], text: `${text}\n${url}`}); return; }
+    }
+    if (navigator.share) { await navigator.share({title: D.island, text, url}); return; }
+  } catch (e) { if (e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(`${text}\n${url}`); toast("已複製，貼給朋友吧"); } catch { prompt("複製這段分享給朋友：", `${text}\n${url}`); }
+}
+function toast(s) { const t = $("toast"); t.textContent = s; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2200); }
+function burst() { window.confetti?.({particleCount: 110, spread: 75, origin: {y: .35}, zIndex: 80, colors: ["#ff8a3d", "#ffcf3f", "#e8412c", "#12a594", "#ffffff"]}); }
+
+// ── 手機抽屜：點或拖拉調高度 ─────────────────────────
+{ const p = $("panel"); let y0 = null;
+  $("grab").addEventListener("pointerdown", e => { y0 = e.clientY; });
+  addEventListener("pointerup", e => {
+    if (y0 == null) return; const dy = e.clientY - y0; y0 = null;
+    if (Math.abs(dy) < 6) { p.classList.toggle("tall"); p.classList.remove("short"); return; }
+    if (dy < 0) { if (p.classList.contains("short")) p.classList.remove("short"); else p.classList.add("tall"); }
+    else { if (p.classList.contains("tall")) p.classList.remove("tall"); else p.classList.add("short"); }
+  }); }
+
+// ── 迴圈 ─────────────────────────────────────────────
+function resize() {
+  renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight;
+  camera.fov = innerWidth < innerHeight ? 52 : 38;
+  // 桌機：島往右讓出側欄；手機：島往上讓出底部抽屜
+  if (innerWidth > 760) camera.setViewOffset(innerWidth, innerHeight, -200, 0, innerWidth, innerHeight);
+  else camera.setViewOffset(innerWidth, innerHeight, 0, innerHeight * .2, innerWidth, innerHeight);
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize); resize();
+camera.position.set(26, 30, 34); controls.target.set(0, 0, 0);
+const clock = new THREE.Clock();
+function tick() {
+  const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
+  const pos = seaGeo.attributes.position;
+  for (let i = 0; i < pos.count; i++) { const x = seaBase[i * 3], z = seaBase[i * 3 + 2]; pos.array[i * 3 + 1] = Math.sin(x * .25 + t * .9) * .12 + Math.cos(z * .3 + t * .7) * .1 - .15; }
+  pos.needsUpdate = true;
+  const [dx, dz] = byId.dock.pos;
+  boats.forEach(b => { const u = b.userData; u.a += u.sp * dt; b.position.set(dx + Math.cos(u.a) * u.rad, Math.sin(t * 2 + u.a * 5) * .06, dz + Math.sin(u.a) * u.rad); b.rotation.y = -u.a; });
+  arcs.forEach(a => { a.t = (a.t + dt * .25) % 1; a.dot.position.copy(a.curve.getPoint(a.t)); });
+  clouds.forEach(c => { c.position.x += c.userData.v * dt; if (c.position.x > 50) c.position.x = -50; });
+  beamPivot.rotation.y = t * .8;
+  chests.forEach((c, i) => c.position.y = c.userData.y + Math.max(0, Math.sin(t * 2 + i)) * .12);
+  if (fly) { fly.t = Math.min(1, fly.t + dt * 1.4); const e = 1 - Math.pow(1 - fly.t, 3); controls.target.lerpVectors(fly.fromT, fly.toT, e); camera.position.lerpVectors(fly.fromP, fly.toP, e); if (fly.t >= 1) fly = null; }
+  controls.update(); renderer.render(scene, camera); updateLabels(false);
+  requestAnimationFrame(tick);
+}
+applyTime();
+{ const el = $("cnt"), t0 = performance.now(); const f = n => { const p = Math.min(1, (n - t0) / 1400); el.textContent = fmt(Math.round(members * (1 - Math.pow(1 - p, 3)))); if (p < 1) requestAnimationFrame(f); }; requestAnimationFrame(f); }
+tick();
+setTimeout(() => {
+  $("loader").classList.add("done");
+  openModal(`<div class="intro"><p class="kicker">歡迎來到</p><h2>${D.island}</h2><ul>
+    <li><span>🏝️</span><p><b>一座島＝島上的一件事</b>廣場是大家住的地方，碼頭迎接新朋友${HAS_LOY ? "，神社打卡、市集換禮物" : ""}。</p></li>
+    <li><span>💡</span><p><b>燈亮＝有人在</b>拉下面的時間軸，看島從清晨到深夜怎麼亮起來。</p></li>
+    <li><span>📒</span><p><b>點島蓋章</b>每逛一座島蓋一個章，全部蓋滿成為榮譽島民。</p></li>
+    <li><span>🧭</span><p><b>你是哪種島民？</b>三題小測驗，拿一張可以分享的身分卡。</p></li></ul>
+    <button class="btn primary" data-close style="width:100%">開始逛 →</button></div>`);
+}, 900);
+</script>
+</body>
+</html>

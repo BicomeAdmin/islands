@@ -1,1 +1,92 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>社群群島</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#14213d;color:#fff;font-family:system-ui,"Noto Sans TC",sans-serif}main{padding:0 16px;text-align:center}a{display:block;margin:12px 0;padding:14px 22px;border-radius:14px;background:#ffffff1a;color:#fff;text-decoration:none;font-weight:700}</style></head><body><main><h1>社群群島</h1><a href="apple/">曾蘋果島</a><a href="pj/">PJ耳邊風島</a><a href="tahan/">大漢家居島</a><a href="erss/">ERSS 穿搭島</a><a href="enliv/">恩莉芙島</a><a href="papabin/">PaPaBin島</a><a href="runner/">跑者充電島</a><a href="hairblack/">髮速黑島</a><a href="beastparadise/">毛怪樂園島</a><a href="ft/">FT美療島</a><a href="bluelab/">藍工站島</a><a href="kopa/">科爸好厝邊島</a><a href="nata-math/">娜她媽數學島</a><a href="naruhodo/">なるほど島</a><a href="wkl-camp/">共學營島</a><a href="tribenight/">TribeNight島</a><a href="riri/">日日好食島</a><a href="safebeauty/">輕醫美安心島</a><a href="yipin/">壹品藥局島</a><a href="wealth-table/">財商餐桌島</a><a href="35global/">置產大富翁島</a><a href="goodsleep/">上品好眠島</a><a href="amacast/">生鐵鍋島</a><a href="mmt/">MMT島</a></main></body></html>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>社群群島</title>
+<meta name="description" content="24 座島，每一座都是一個 LINE 社群。挑一座上去逛逛。">
+<meta name="theme-color" content="#14213d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="社群群島｜24 座島等你上岸">
+<meta property="og:description" content="看看每座島什麼時候最熱鬧，挑一座上去一起聊。">
+<style>
+:root{
+  --font:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+  --ink:#1d2433;--ink-2:#4a5468;--ink-3:#8a93a6;--paper:#fffaf1;--card:#fff;--line:#ece4d6;
+  --red:#e8412c;--teal:#12a594;--navy:#14213d;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);-webkit-font-smoothing:antialiased}
+header{position:relative;overflow:hidden;color:#fff;text-align:center;padding:56px 16px 92px;
+  background:linear-gradient(180deg,#14213d 0%,#24407a 55%,#3f7fc1 100%)}
+header::before{content:"";position:absolute;inset:0;opacity:.55;
+  background-image:radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent),radial-gradient(1px 1px at 28% 60%,#fff,transparent),
+  radial-gradient(1.5px 1.5px at 46% 18%,#fff,transparent),radial-gradient(1px 1px at 63% 42%,#fff,transparent),
+  radial-gradient(1.5px 1.5px at 78% 16%,#fff,transparent),radial-gradient(1px 1px at 90% 54%,#fff,transparent)}
+header svg{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:60px}
+.kicker{position:relative;margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:.2em;color:#ffcf3f}
+h1{position:relative;margin:0;font-size:clamp(34px,8vw,56px);font-weight:900;letter-spacing:.04em}
+.lead{position:relative;margin:12px auto 0;max-width:30em;font-size:16px;line-height:1.7;color:#dbe6ff}
+.totals{position:relative;display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
+.totals span{padding:8px 14px;border-radius:999px;background:#ffffff1f;font-size:14px;font-weight:700}
+.totals b{font-size:18px;margin-right:4px}
+main{max-width:1080px;margin:-46px auto 0;padding:0 16px 48px;position:relative}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tools input{flex:1 1 220px;min-width:0;padding:13px 16px;border:0;border-radius:14px;background:var(--card);
+  box-shadow:0 8px 24px rgba(20,33,61,.12),inset 0 0 0 1.5px var(--line);font:600 15px var(--font);color:var(--ink)}
+.tools input:focus{outline:2px solid var(--red);outline-offset:1px}
+.chip{padding:11px 14px;border:0;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line);
+  font:800 14px var(--font);color:var(--ink-2);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--navy);color:#fff;box-shadow:none}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.isle{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:18px;background:var(--card);
+  box-shadow:0 1px 0 var(--line),inset 0 0 0 1.5px var(--line);color:inherit;text-decoration:none;
+  transition:transform .15s,box-shadow .15s}
+.isle:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,33,61,.14),inset 0 0 0 1.5px var(--line)}
+.top{display:flex;align-items:center;gap:12px}
+.hex{flex:none;width:46px;height:52px;display:grid;place-items:center;color:#fff;font-size:20px;font-weight:900;
+  clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.name{font-size:17px;font-weight:900;line-height:1.3}
+.peak{margin-top:2px;font-size:13px;color:var(--ink-3)}
+.row{display:flex;align-items:flex-end;justify-content:space-between;gap:8px}
+.num b{font-size:24px;font-weight:900}
+.num small{margin-left:4px;font-size:13px;color:var(--ink-3)}
+.tag{font-size:12px;font-weight:800;padding:4px 9px;border-radius:999px;background:#e6f6f3;color:var(--teal);white-space:nowrap}
+.go{font-size:13px;font-weight:800;color:var(--red)}
+.empty{display:none;padding:40px 0;text-align:center;color:var(--ink-3)}
+footer{padding:0 16px 32px;text-align:center;font-size:12px;color:var(--ink-3)}
+@media (max-width:520px){header{padding-top:40px}.grid{grid-template-columns:1fr 1fr;gap:10px}.isle{padding:13px;gap:10px}
+  .top{flex-direction:column;align-items:flex-start;gap:8px}.hex{width:38px;height:43px;font-size:17px}.name{font-size:15px}
+  .num b{font-size:20px}.row{flex-direction:column;align-items:flex-start;gap:6px}}
+</style>
+</head>
+<body>
+<header>
+  <p class="kicker">BICOME ISLANDS</p>
+  <h1>社群群島</h1>
+  <p class="lead">每一座島都是一個 LINE 社群。看看哪裡最熱鬧，挑一座上去逛逛。</p>
+  <div class="totals"><span><b>24</b>座島</span><span><b>6,687</b>位島民</span></div>
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 34 C 200 6 400 58 600 30 S 1000 4 1200 30 V60 H0Z" fill="#fffaf1"/></svg>
+</header>
+<main>
+  <div class="tools">
+    <input id="q" type="search" placeholder="找島名或社群名…" aria-label="搜尋島名或社群名">
+    <button class="chip" id="fApp" aria-pressed="false">⛩️ 可打卡</button>
+  </div>
+  <div class="grid" id="grid"><a class="isle" href="naruhodo/" data-name="なるほど島 王可樂日語｜なるほど 日語同好會" data-app="1"><div class="top"><span class="hex" style="background:#e8412c">な</span><div><div class="name">なるほど島</div><div class="peak">最熱鬧 週二 20:00</div></div></div><div class="row"><span class="num"><b>1,543</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="wkl-camp/" data-name="共學營島 王可樂初級日文總整理共學營" data-app="1"><div class="top"><span class="hex" style="background:#ff8a3d">共</span><div><div class="name">共學營島</div><div class="peak">最熱鬧 週六 10:00</div></div></div><div class="row"><span class="num"><b>1,239</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="apple/" data-name="曾蘋果島 曾蘋果老師個人品牌共學圈" data-app="1"><div class="top"><span class="hex" style="background:#12a594">曾</span><div><div class="name">曾蘋果島</div><div class="peak">最熱鬧 週五 17:00</div></div></div><div class="row"><span class="num"><b>403</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="riri/" data-name="日日好食島 日日好食 SHOP.COM 互助會｜現金回饋 7%、IBV 16.5%" data-app="1"><div class="top"><span class="hex" style="background:#3f7fc1">日</span><div><div class="name">日日好食島</div><div class="peak">最熱鬧 週三 17:00</div></div></div><div class="row"><span class="num"><b>391</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="hairblack/" data-name="髮速黑島 髮速黑｜養髮陪伴所" data-app="0"><div class="top"><span class="hex" style="background:#7a5cd6">髮</span><div><div class="name">髮速黑島</div><div class="peak">最熱鬧 週四 13:00</div></div></div><div class="row"><span class="num"><b>366</b><small>位島民</small></span><span class="go">上島逛逛 →</span></div></a><a class="isle" href="nata-math/" data-name="娜她媽數學島 娜她媽的數學教室陪伴群" data-app="1"><div class="top"><span class="hex" style="background:#d6457f">娜</span><div><div class="name">娜她媽數學島</div><div class="peak">最熱鬧 週六 20:00</div></div></div><div class="row"><span class="num"><b>344</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="kopa/" data-name="科爸好厝邊島 科爸🤓你的美妝保養好厝邊" data-app="1"><div class="top"><span class="hex" style="background:#2f9e44">科</span><div><div class="name">科爸好厝邊島</div><div class="peak">最熱鬧 週三 12:00</div></div></div><div class="row"><span class="num"><b>321</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="papabin/" data-name="PaPaBin島 去去廚餘走！PaPaBin" data-app="1"><div class="top"><span class="hex" style="background:#c78a12">P</span><div><div class="name">PaPaBin島</div><div class="peak">最熱鬧 週五 14:00</div></div></div><div class="row"><span class="num"><b>299</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="runner/" data-name="跑者充電島 運動趣｜跑者充電站" data-app="0"><div class="top"><span class="hex" style="background:#e8412c">跑</span><div><div class="name">跑者充電島</div><div class="peak">最熱鬧 週三 10:00</div></div></div><div class="row"><span class="num"><b>204</b><small>位島民</small></span><span class="go">上島逛逛 →</span></div></a><a class="isle" href="pj/" data-name="PJ耳邊風島 PJ耳邊風2.0" data-app="1"><div class="top"><span class="hex" style="background:#ff8a3d">P</span><div><div class="name">PJ耳邊風島</div><div class="peak">最熱鬧 週三 10:00</div></div></div><div class="row"><span class="num"><b>194</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="beastparadise/" data-name="毛怪樂園島 毛怪樂園-毛孩選物" data-app="0"><div class="top"><span class="hex" style="background:#12a594">毛</span><div><div class="name">毛怪樂園島</div><div class="peak">最熱鬧 週一 20:00</div></div></div><div class="row"><span class="num"><b>145</b><small>位島民</small></span><span class="go">上島逛逛 →</span></div></a><a class="isle" href="bluelab/" data-name="藍工站島 藍工站｜門市已開幕！歡迎來挑裝備" data-app="1"><div class="top"><span class="hex" style="background:#3f7fc1">藍</span><div><div class="name">藍工站島</div><div class="peak">最熱鬧 週一 22:00</div></div></div><div class="row"><span class="num"><b>136</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="tahan/" data-name="大漢家居島 大漢家居好感圈" data-app="0"><div class="top"><span class="hex" style="background:#7a5cd6">大</span><div><div class="name">大漢家居島</div><div class="peak">最熱鬧 週三 15:00</div></div></div><div class="row"><span class="num"><b>133</b><small>位島民</small></span><span class="go">上島逛逛 →</span></div></a><a class="isle" href="35global/" data-name="置產大富翁島 35全球置產大富翁" data-app="1"><div class="top"><span class="hex" style="background:#d6457f">置</span><div><div class="name">置產大富翁島</div><div class="peak">最熱鬧 週二 17:00</div></div></div><div class="row"><span class="num"><b>119</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="tribenight/" data-name="TribeNight島 TribeNight VIP🍸酒友交流群" data-app="1"><div class="top"><span class="hex" style="background:#2f9e44">T</span><div><div class="name">TribeNight島</div><div class="peak">最熱鬧 週四 17:00</div></div></div><div class="row"><span class="num"><b>117</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="enliv/" data-name="恩莉芙島 (ENLIV) 絕美日常圈" data-app="1"><div class="top"><span class="hex" style="background:#c78a12">恩</span><div><div class="name">恩莉芙島</div><div class="peak">最熱鬧 週二 17:00</div></div></div><div class="row"><span class="num"><b>111</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="ft/" data-name="FT美療島 FT美療暈暈新生還原所" data-app="1"><div class="top"><span class="hex" style="background:#e8412c">F</span><div><div class="name">FT美療島</div><div class="peak">最熱鬧 週一 13:00</div></div></div><div class="row"><span class="num"><b>111</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="wealth-table/" data-name="財商餐桌島 首席顧問財商餐桌會" data-app="1"><div class="top"><span class="hex" style="background:#ff8a3d">財</span><div><div class="name">財商餐桌島</div><div class="peak">最熱鬧 週二 15:00</div></div></div><div class="row"><span class="num"><b>94</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="erss/" data-name="ERSS 穿搭島 ERSS生活穿搭誌" data-app="1"><div class="top"><span class="hex" style="background:#12a594">E</span><div><div class="name">ERSS 穿搭島</div><div class="peak">最熱鬧 週四 16:00</div></div></div><div class="row"><span class="num"><b>92</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="mmt/" data-name="MMT島 MMT人生策略系統｜自我探索.天賦發展.人際關係" data-app="0"><div class="top"><span class="hex" style="background:#3f7fc1">M</span><div><div class="name">MMT島</div><div class="peak">最熱鬧 週三 12:00</div></div></div><div class="row"><span class="num"><b>83</b><small>位島民</small></span><span class="go">上島逛逛 →</span></div></a><a class="isle" href="yipin/" data-name="壹品藥局島 壹品連鎖藥局🧑‍⚕️VIP專屬優惠❤️" data-app="1"><div class="top"><span class="hex" style="background:#7a5cd6">壹</span><div><div class="name">壹品藥局島</div><div class="peak">最熱鬧 週二 14:00</div></div></div><div class="row"><span class="num"><b>76</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="amacast/" data-name="生鐵鍋島 阿媽牌生鐵鍋" data-app="0"><div class="top"><span class="hex" style="background:#d6457f">生</span><div><div class="name">生鐵鍋島</div><div class="peak">最熱鬧 週一 17:00</div></div></div><div class="row"><span class="num"><b>63</b><small>位島民</small></span><span class="go">上島逛逛 →</span></div></a><a class="isle" href="safebeauty/" data-name="輕醫美安心島 台北輕醫美安心交流社" data-app="1"><div class="top"><span class="hex" style="background:#2f9e44">輕</span><div><div class="name">輕醫美安心島</div><div class="peak">最熱鬧 週二 16:00</div></div></div><div class="row"><span class="num"><b>54</b><small>位島民</small></span><span class="tag">⛩️ 可打卡</span></div></a><a class="isle" href="goodsleep/" data-name="上品好眠島 上品好眠俱樂部" data-app="0"><div class="top"><span class="hex" style="background:#c78a12">上</span><div><div class="name">上品好眠島</div><div class="peak">最熱鬧 週三 16:00</div></div></div><div class="row"><span class="num"><b>49</b><small>位島民</small></span><span class="go">上島逛逛 →</span></div></a></div>
+  <p class="empty" id="empty">找不到這座島，換個字試試</p>
+</main>
+<footer>數字每週一更新・只顯示彙總人數，不含任何個人資料</footer>
+<script>
+const q = document.getElementById("q"), fApp = document.getElementById("fApp"), cards = [...document.querySelectorAll(".isle")];
+function apply() {
+  const k = q.value.trim().toLowerCase(), app = fApp.getAttribute("aria-pressed") === "true";
+  let n = 0;
+  for (const c of cards) { const ok = c.dataset.name.toLowerCase().includes(k) && (!app || c.dataset.app === "1"); c.hidden = !ok; n += ok; }
+  document.getElementById("empty").style.display = n ? "none" : "block";
+}
+q.addEventListener("input", apply);
+fApp.addEventListener("click", () => { fApp.setAttribute("aria-pressed", fApp.getAttribute("aria-pressed") !== "true"); apply(); });
+</script>
+</body>
+</html>

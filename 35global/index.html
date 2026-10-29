@@ -524,7 +524,56 @@ for (let i = 0; i < 5; i++) {
   gl.userData = {pL, pR, cx: home[0], cz: home[1], rad: 2.5 + R() * 2.5, h: 4 + R() * 2.5, a: R() * 6, sp: .4 + R() * .3};
   scene.add(gl); life.gulls.push(gl);
 }
+// 外圍點綴小島：只當風景、不能點，讓群島看起來更大更熱鬧
+function palm(g, x, y, z) {
+  let px = x, py = y; const lean = (R() - .5) * .5;
+  for (let k = 0; k < 4; k++) { const sgm = new THREE.Mesh(new THREE.CylinderGeometry(.06, .08, .32, 5), mats.trunk); sgm.position.set(px, py + .16, z); sgm.rotation.z = lean * k * .3; g.add(sgm); py += .3; px -= lean * .12; }
+  for (let k = 0; k < 5; k++) { const lf = new THREE.Mesh(new THREE.ConeGeometry(.1, .8, 4), mats.leaf[k % 3]); const a = k / 5 * Math.PI * 2;
+    lf.position.set(px + Math.cos(a) * .3, py + .02, z + Math.sin(a) * .3); lf.rotation.set(Math.sin(a) * 1.3, 0, -Math.cos(a) * 1.3); lf.castShadow = true; g.add(lf); }
+}
+const ISLET_KINDS = ["palm", "rock", "hut", "garden", "beach", "mill", "palm", "garden", "rock", "hut", "beach", "mill"];
+const islets = [];
+for (let i = 0, tries = 0; islets.length < ISLET_KINDS.length && tries < 400; tries++) {
+  const a = R() * Math.PI * 2, d = 13 + R() * 11, x = Math.cos(a) * d, z = Math.sin(a) * d;
+  if (ISL.some(o => Math.hypot(o.pos[0] - x, o.pos[1] - z) < o.r * 1.8 + 4)) continue;
+  if (islets.some(o => Math.hypot(o.x - x, o.z - z) < 5)) continue;
+  islets.push({x, z, kind: ISLET_KINDS[islets.length], big: R() < .45});
+}
+for (const it of islets) {
+  const g = new THREE.Group(); g.position.set(it.x, 0, it.z); g.rotation.y = R() * 6; scene.add(g);
+  const cells = it.big ? [[0, 0], [1, 0], [0, 1], [-1, 1], [-1, 0], [0, -1], [1, -1]] : [[0, 0], [1, 0], [0, 1]], tiles = [];
+  cells.forEach(([q, r], k) => {
+    const [x, z] = axialToXZ(q, r), sandy = it.kind === "beach" || k > 0 && it.kind === "palm";
+    const h = (k ? .4 : .6) + R() * .15;
+    const m = new THREE.Mesh(hexGeo, sandy ? mats.sand : it.kind === "rock" ? mats.stone : mats.grass[k % 3]);
+    m.scale.set(.97, h, .97); m.position.set(x, h / 2, z); m.castShadow = m.receiveShadow = true; g.add(m);
+    const base = new THREE.Mesh(hexGeo, mats.rockD); base.scale.set(.95, 1.2, .95); base.position.set(x, -.55, z); g.add(base);
+    tiles.push({x, y: h, z});
+  });
+  const t0 = tiles[0];
+  if (it.kind === "palm") tiles.forEach((t, k) => { if (k % 2 === 0) palm(g, t.x, t.y, t.z); });
+  if (it.kind === "rock") { for (let k = 0; k < 3; k++) { const sp = new THREE.Mesh(new THREE.DodecahedronGeometry(.45 - k * .1, 0), k ? mats.stone : mats.rock); sp.position.set(t0.x + (k ? (R() - .5) : 0), t0.y + .35 + (k ? 0 : .3), t0.z + (k ? (R() - .5) : 0)); sp.scale.y = k ? 1 : 2.2; sp.castShadow = true; g.add(sp); } }
+  if (it.kind === "hut") { addHouse(g, t0.x, t0.y, t0.z, .8); tiles.slice(1).forEach(t => addTree(g, t.x, t.y, t.z, .7)); }
+  if (it.kind === "garden") tiles.forEach((t, k) => addTree(g, t.x + (R() - .5) * .4, t.y, t.z + (R() - .5) * .4, .6 + R() * .4));
+  if (it.kind === "beach") {
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, .9, 4), mats.white); pole.position.set(t0.x, t0.y + .45, t0.z); g.add(pole);
+    const um = new THREE.Mesh(new THREE.ConeGeometry(.6, .3, 8), mats.roof[Math.floor(R() * 4)]); um.position.set(t0.x, t0.y + .95, t0.z); um.castShadow = true; g.add(um);
+    const towel = new THREE.Mesh(new THREE.BoxGeometry(.5, .02, .25), mats.red); towel.position.set(t0.x + .45, t0.y + .01, t0.z + .2); g.add(towel);
+  }
+  if (it.kind === "mill") {
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(.22, .32, 1.1, 8), mats.wall); body.position.set(t0.x, t0.y + .55, t0.z); body.castShadow = true; g.add(body);
+    const top = new THREE.Mesh(new THREE.ConeGeometry(.3, .35, 8), mats.roof[0]); top.position.set(t0.x, t0.y + 1.27, t0.z); g.add(top);
+    const blades = new THREE.Group(); blades.position.set(t0.x, t0.y + 1.0, t0.z + .3);
+    for (let k = 0; k < 4; k++) { const bl = new THREE.Mesh(new THREE.BoxGeometry(.08, .7, .02), mats.wood); bl.position.y = .35; const piv = new THREE.Group(); piv.rotation.z = k * Math.PI / 2; piv.add(bl); blades.add(piv); }
+    g.add(blades); (life.mills ||= []).push(blades);
+  }
+  flowers({g, tiles}, cells.length * 3);
+  const R0 = (it.big ? 1.6 : 1.1) + .9;
+  const f = new THREE.Mesh(new THREE.RingGeometry(R0, R0 + .25, 36), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .3, depthWrite: false}));
+  f.rotation.x = -Math.PI / 2; f.position.y = .02; g.add(f); life.foams.push(f);
+}
 function tickLife(dt, t, night) {
+  for (const m of life.mills || []) m.rotation.z -= dt * 1.2;
   for (const w of life.walkers) {
     w.u = (w.u + w.sp * dt + 1) % 1; const p = w.path.getPointAt(w.u), q = w.path.getPointAt((w.u + Math.sign(w.sp) * .01 + 1) % 1);
     w.v.position.set(p.x, p.y + Math.abs(Math.sin(t * 8 + w.u * 50)) * .05, p.z); w.v.lookAt(q.x + plaza.g.position.x, w.v.position.y, q.z + plaza.g.position.z);

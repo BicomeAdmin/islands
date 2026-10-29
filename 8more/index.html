@@ -163,6 +163,7 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 .stamp span{font-size:26px;filter:grayscale(1);opacity:.5}
 .stamp.got{border:3px solid #d7263d;color:#d7263d;transform:rotate(-8deg);background:#fff6f2}
 .stamp.got span{filter:none;opacity:1}
+.passport.bag{grid-template-columns:repeat(4,1fr);gap:8px}.bag .stamp{font-size:11px;padding:2px}.bag .stamp span{font-size:22px}
 .toast{position:fixed;left:50%;top:calc(116px + env(safe-area-inset-top));z-index:50;transform:translateX(-50%);padding:10px 16px;border-radius:99px;background:#14213ded;color:#fff;font-size:13.5px;font-weight:800;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap}
 .toast.on{opacity:1}
 #loader{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 10%,#ffd9a8,#ff8a5c 38%,#3b2a6b);color:#fff;text-align:center;transition:opacity .8s,visibility .8s}
@@ -204,7 +205,7 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
   <button class="dk" id="bShare">📤 分享</button>
 </nav>
 
-<aside class="panel" id="panel">
+<aside class="panel short" id="panel">
   <div class="grab" id="grab"><i></i></div>
   <div class="timebar">
     <div class="tb-row">
@@ -222,7 +223,7 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 <div class="toast" id="toast"></div>
 <div id="loader"><div><h1 id="ldName">8more島</h1><p class="ld-msg">正在填海造島…</p><div class="ld-static"><b>179</b> 位島民 ・ 最熱鬧 週三 20:00<br>會員系統：<a href="https://liff.line.me/1603399913-dFcyi9Vc?projectId=cmp4xa2w60ca8i6vsp5heqqwl" target="_blank" rel="noopener">https://liff.line.me/1603399913-dFcyi9Vc?projectId=cmp4xa2w60ca8i6vsp5heqqwl</a><small>這是互動島（3D 群島、時間軸、島民測驗）。在 Lark 裡只能看到這張卡，請按右上角「下載」後用瀏覽器開啟。</small></div></div></div>
 
-<script>window.ISLAND_DATA = {"case": "8more", "mode": "system", "island": "8more島", "join_url": "https://liff.line.me/1603399913-dFcyi9Vc?projectId=cmp4xa2w60ca8i6vsp5heqqwl", "app_url": "https://liff.line.me/1603399913-dFcyi9Vc?projectId=cmp4xa2w60ca8i6vsp5heqqwl", "phrases": false, "loyalty": [{"d": "2026-09-29", "sid": "more", "members": 158, "a1": 29, "a7": 35, "a30": 59, "sub7": 41, "red7": 1}, {"d": "2026-09-30", "sid": "more", "members": 158, "a1": 25, "a7": 35, "a30": 59, "sub7": 38, "red7": 1}, {"d": "2026-10-01", "sid": "more", "members": 158, "a1": 20, "a7": 35, "a30": 59, "sub7": 47, "red7": 2}, {"d": "2026-10-02", "sid": "more", "members": 158, "a1": 18, "a7": 36, "a30": 57, "sub7": 53, "red7": 2}, {"d": "2026-10-03", "sid": "more", "members": 162, "a1": 17, "a7": 42, "a30": 62, "sub7": 51, "red7": 9}, {"d": "2026-10-04", "sid": "more", "members": 162, "a1": 18, "a7": 41, "a30": 62, "sub7": 48, "red7": 9}, {"d": "2026-10-05", "sid": "more", "members": 162, "a1": 15, "a7": 41, "a30": 62, "sub7": 35, "red7": 8}, {"d": "2026-10-06", "sid": "more", "members": 162, "a1": 18, "a7": 42, "a30": 62, "sub7": 37, "red7": 8}, {"d": "2026-10-07", "sid": "more", "members": 163, "a1": 18, "a7": 43, "a30": 62, "sub7": 34, "red7": 8}, {"d": "2026-10-08", "sid": "more", "members": 163, "a1": 21, "a7": 44, "a30": 62, "sub7": 35, "red7": 7}, {"d": "2026-10-09", "sid": "more", "members": 164, "a1": 17, "a7": 38, "a30": 59, "sub7": 33, "red7": 7}, {"d": "2026-10-10", "sid": "more", "members": 164, "a1": 17, "a7": 37, "a30": 56, "sub7": 31, "red7": 2}, {"d": "2026-10-11", "sid": "more", "members": 166, "a1": 15, "a7": 37, "a30": 56, "sub7": 30, "red7": 2}, {"d": "2026-10-12", "sid": "more", "members": 168, "a1": 15, "a7": 38, "a30": 58, "sub7": 30, "red7": 5}, {"d": "2026-10-13", "sid": "more", "members": 168, "a1": 20, "a7": 41, "a30": 58, "sub7": 32, "red7": 9}, {"d": "2026-10-14", "sid": "more", "members": 168, "a1": 16, "a7": 40, "a30": 58, "sub7": 33, "red7": 9}, {"d": "2026-10-15", "sid": "more", "members": 170, "a1": 26, "a7": 47, "a30": 61, "sub7": 31, "red7": 12}, {"d": "2026-10-16", "sid": "more", "members": 173, "a1": 24, "a7": 55, "a30": 65, "sub7": 30, "red7": 15}, {"d": "2026-10-17", "sid": "more", "members": 174, "a1": 27, "a7": 55, "a30": 65, "sub7": 31, "red7": 24}, {"d": "2026-10-18", "sid": "more", "members": 174, "a1": 20, "a7": 52, "a30": 65, "sub7": 33, "red7": 24}, {"d": "2026-10-19", "sid": "more", "members": 174, "a1": 21, "a7": 50, "a30": 65, "sub7": 33, "red7": 26}, {"d": "2026-10-20", "sid": "more", "members": 174, "a1": 21, "a7": 49, "a30": 64, "sub7": 31, "red7": 23}, {"d": "2026-10-21", "sid": "more", "members": 174, "a1": 22, "a7": 48, "a30": 64, "sub7": 30, "red7": 23}, {"d": "2026-10-22", "sid": "more", "members": 175, "a1": 18, "a7": 41, "a30": 65, "sub7": 29, "red7": 23}, {"d": "2026-10-23", "sid": "more", "members": 176, "a1": 17, "a7": 41, "a30": 67, "sub7": 30, "red7": 20}, {"d": "2026-10-24", "sid": "more", "members": 177, "a1": 17, "a7": 41, "a30": 69, "sub7": 32, "red7": 14}, {"d": "2026-10-25", "sid": "more", "members": 177, "a1": 18, "a7": 40, "a30": 69, "sub7": 36, "red7": 16}, {"d": "2026-10-26", "sid": "more", "members": 177, "a1": 15, "a7": 40, "a30": 69, "sub7": 37, "red7": 19}, {"d": "2026-10-27", "sid": "more", "members": 179, "a1": 26, "a7": 46, "a30": 72, "sub7": 37, "red7": 18}, {"d": "2026-10-28", "sid": "more", "members": 179, "a1": 24, "a7": 45, "a30": 71, "sub7": 37, "red7": 18}, {"d": "2026-10-29", "sid": "more", "members": 179, "a1": 18, "a7": 46, "a30": 71, "sub7": 33, "red7": 22}], "loyalty30": {}, "community": {"as_of": null, "speakers": 0, "active14": 0, "joined30": 0, "tags": {"好奇寶寶": 0, "破風手": 0, "聯繫員": 0, "推銷員": 0, "追隨者": 0}}, "chat": {"as_of": "2026-10-29", "days": 28, "grid": {"4-9": 1, "4-3": 5, "5-19": 3, "2-16": 4, "4-20": 2, "0-6": 2, "4-21": 1, "4-4": 2, "5-8": 1, "2-19": 6, "3-18": 3, "5-4": 2, "5-2": 1, "3-6": 2, "1-23": 2, "5-1": 3, "1-20": 2, "3-22": 1, "2-20": 10, "3-2": 2, "0-19": 1, "3-20": 5, "2-17": 7, "2-8": 8, "3-3": 4, "2-22": 2, "3-4": 2, "3-23": 1, "5-10": 1, "4-1": 2, "3-19": 1, "4-17": 1, "4-22": 1, "1-15": 1, "0-2": 3, "3-14": 1, "5-17": 1, "2-18": 3, "3-0": 2, "3-8": 3, "3-9": 1, "5-3": 2, "3-17": 3, "2-9": 2, "4-18": 1, "5-20": 1, "2-14": 2, "3-16": 1, "3-1": 1, "0-17": 4, "2-21": 4, "3-21": 2, "2-23": 3}, "speakers": 25, "region": {}, "region_tagged": 0}, "catalog": {"quests": [{"t": "曬出你的「健康」飲品✨", "pts": 20, "n": 71}, {"t": "我的 8more「心」體驗📝", "pts": 10, "n": 65}, {"t": "8more板規簽到", "pts": 2, "n": 3}, {"t": "曬出你的「愛文芒果白木耳飲」✨", "pts": 15, "n": 2}, {"t": "銀耳初心者報到！🌳自我介紹", "pts": 5, "n": 2}], "gifts": [{"t": "🍓雪克銀耳優格飲乙瓶", "cost": 200, "n": 21}, {"t": "✨銀耳膳2.0 PLUS版 一包", "cost": 100, "n": 19}, {"t": "🌿50元健康購物金", "cost": 80, "n": 14}, {"t": "🌿100元健康購物金", "cost": 150, "n": 9}, {"t": "🌿300元健康購物金", "cost": 390, "n": 1}, {"t": "✨雪耳鮮燉・植物燕窩(4入禮盒)", "cost": 1200, "n": 1}], "events": []}};</script>
+<script>window.ISLAND_DATA = {"case": "8more", "mode": "system", "island": "8more島", "join_url": "https://liff.line.me/1603399913-dFcyi9Vc?projectId=cmp4xa2w60ca8i6vsp5heqqwl", "app_url": "https://liff.line.me/1603399913-dFcyi9Vc?projectId=cmp4xa2w60ca8i6vsp5heqqwl", "phrases": false, "loyalty": [{"d": "2026-09-29", "sid": "more", "members": 158, "a1": 29, "a7": 35, "a30": 59, "sub7": 41, "red7": 1}, {"d": "2026-09-30", "sid": "more", "members": 158, "a1": 25, "a7": 35, "a30": 59, "sub7": 38, "red7": 1}, {"d": "2026-10-01", "sid": "more", "members": 158, "a1": 20, "a7": 35, "a30": 59, "sub7": 47, "red7": 2}, {"d": "2026-10-02", "sid": "more", "members": 158, "a1": 18, "a7": 36, "a30": 57, "sub7": 53, "red7": 2}, {"d": "2026-10-03", "sid": "more", "members": 162, "a1": 17, "a7": 42, "a30": 62, "sub7": 51, "red7": 9}, {"d": "2026-10-04", "sid": "more", "members": 162, "a1": 18, "a7": 41, "a30": 62, "sub7": 48, "red7": 9}, {"d": "2026-10-05", "sid": "more", "members": 162, "a1": 15, "a7": 41, "a30": 62, "sub7": 35, "red7": 8}, {"d": "2026-10-06", "sid": "more", "members": 162, "a1": 18, "a7": 42, "a30": 62, "sub7": 37, "red7": 8}, {"d": "2026-10-07", "sid": "more", "members": 163, "a1": 18, "a7": 43, "a30": 62, "sub7": 34, "red7": 8}, {"d": "2026-10-08", "sid": "more", "members": 163, "a1": 21, "a7": 44, "a30": 62, "sub7": 35, "red7": 7}, {"d": "2026-10-09", "sid": "more", "members": 164, "a1": 17, "a7": 38, "a30": 59, "sub7": 33, "red7": 7}, {"d": "2026-10-10", "sid": "more", "members": 164, "a1": 17, "a7": 37, "a30": 56, "sub7": 31, "red7": 2}, {"d": "2026-10-11", "sid": "more", "members": 166, "a1": 15, "a7": 37, "a30": 56, "sub7": 30, "red7": 2}, {"d": "2026-10-12", "sid": "more", "members": 168, "a1": 15, "a7": 38, "a30": 58, "sub7": 30, "red7": 5}, {"d": "2026-10-13", "sid": "more", "members": 168, "a1": 20, "a7": 41, "a30": 58, "sub7": 32, "red7": 9}, {"d": "2026-10-14", "sid": "more", "members": 168, "a1": 16, "a7": 40, "a30": 58, "sub7": 33, "red7": 9}, {"d": "2026-10-15", "sid": "more", "members": 170, "a1": 26, "a7": 47, "a30": 61, "sub7": 31, "red7": 12}, {"d": "2026-10-16", "sid": "more", "members": 173, "a1": 24, "a7": 55, "a30": 65, "sub7": 30, "red7": 15}, {"d": "2026-10-17", "sid": "more", "members": 174, "a1": 27, "a7": 55, "a30": 65, "sub7": 31, "red7": 24}, {"d": "2026-10-18", "sid": "more", "members": 174, "a1": 20, "a7": 52, "a30": 65, "sub7": 33, "red7": 24}, {"d": "2026-10-19", "sid": "more", "members": 174, "a1": 21, "a7": 50, "a30": 65, "sub7": 33, "red7": 26}, {"d": "2026-10-20", "sid": "more", "members": 174, "a1": 21, "a7": 49, "a30": 64, "sub7": 31, "red7": 23}, {"d": "2026-10-21", "sid": "more", "members": 174, "a1": 22, "a7": 48, "a30": 64, "sub7": 30, "red7": 23}, {"d": "2026-10-22", "sid": "more", "members": 175, "a1": 18, "a7": 41, "a30": 65, "sub7": 29, "red7": 23}, {"d": "2026-10-23", "sid": "more", "members": 176, "a1": 17, "a7": 41, "a30": 67, "sub7": 30, "red7": 20}, {"d": "2026-10-24", "sid": "more", "members": 177, "a1": 17, "a7": 41, "a30": 69, "sub7": 32, "red7": 14}, {"d": "2026-10-25", "sid": "more", "members": 177, "a1": 18, "a7": 40, "a30": 69, "sub7": 36, "red7": 16}, {"d": "2026-10-26", "sid": "more", "members": 177, "a1": 15, "a7": 40, "a30": 69, "sub7": 37, "red7": 19}, {"d": "2026-10-27", "sid": "more", "members": 179, "a1": 26, "a7": 46, "a30": 72, "sub7": 37, "red7": 18}, {"d": "2026-10-28", "sid": "more", "members": 179, "a1": 24, "a7": 45, "a30": 71, "sub7": 37, "red7": 18}, {"d": "2026-10-29", "sid": "more", "members": 179, "a1": 18, "a7": 46, "a30": 71, "sub7": 33, "red7": 22}], "loyalty30": {}, "community": {"as_of": null, "speakers": 0, "active14": 0, "joined30": 0, "tags": {"好奇寶寶": 0, "破風手": 0, "聯繫員": 0, "推銷員": 0, "追隨者": 0}}, "chat": {"as_of": "2026-10-29", "days": 28, "grid": {"0-2": 3, "0-6": 2, "0-17": 4, "0-19": 1, "1-15": 1, "1-20": 2, "1-23": 2, "2-8": 8, "2-9": 2, "2-14": 2, "2-16": 4, "2-17": 7, "2-18": 3, "2-19": 6, "2-20": 10, "2-21": 4, "2-22": 2, "2-23": 3, "3-0": 2, "3-1": 1, "3-2": 2, "3-3": 4, "3-4": 2, "3-6": 2, "3-8": 3, "3-9": 1, "3-14": 1, "3-16": 1, "3-17": 3, "3-18": 3, "3-19": 1, "3-20": 5, "3-21": 2, "3-22": 1, "3-23": 1, "4-1": 2, "4-3": 5, "4-4": 2, "4-9": 1, "4-17": 1, "4-18": 1, "4-20": 2, "4-21": 1, "4-22": 1, "5-1": 3, "5-2": 1, "5-3": 2, "5-4": 2, "5-8": 1, "5-10": 1, "5-17": 1, "5-19": 3, "5-20": 1}, "speakers": 25, "region": {}, "region_tagged": 0}, "catalog": {"quests": [{"t": "曬出你的「健康」飲品✨", "pts": 20, "n": 71}, {"t": "我的 8more「心」體驗📝", "pts": 10, "n": 65}, {"t": "8more板規簽到", "pts": 2, "n": 3}, {"t": "曬出你的「愛文芒果白木耳飲」✨", "pts": 15, "n": 2}, {"t": "銀耳初心者報到！🌳自我介紹", "pts": 5, "n": 2}], "gifts": [{"t": "🍓雪克銀耳優格飲乙瓶", "cost": 200, "n": 21}, {"t": "✨銀耳膳2.0 PLUS版 一包", "cost": 100, "n": 19}, {"t": "🌿50元健康購物金", "cost": 80, "n": 14}, {"t": "🌿100元健康購物金", "cost": 150, "n": 9}, {"t": "🌿300元健康購物金", "cost": 390, "n": 1}, {"t": "✨雪耳鮮燉・植物燕窩(4入禮盒)", "cost": 1200, "n": 1}], "events": []}};</script>
 <script type="module">
 import * as THREE from "three";
 import CameraControls from "https://cdn.jsdelivr.net/npm/camera-controls@2.9.0/dist/camera-controls.module.js";
@@ -1029,10 +1030,40 @@ function openPhrase() {
   $("again").onclick = openPhrase;
   $("shP").onclick = () => share(`今天在「${D.island}」抽到：${p[0]}（${p[2]}）🎴 你也來抽一句！`);
 }
+// ── 每日上島撿寶：每天第一次上島撿一樣東西，連續天數越多越撿得到稀有的（只記在這支手機） ──
+const FINDS = [["🐚", "貝殼"], ["🪸", "珊瑚"], ["⭐", "海星"], ["🍶", "漂流瓶"], ["🪶", "海鷗羽毛"], ["🥥", "椰子"], ["💎", "海玻璃"], ["🦀", "小螃蟹"], ["🌺", "扶桑花"],
+  ["🗝️", "古老鑰匙", 3], ["🧭", "舊羅盤", 5], ["👑", "人魚皇冠", 7]];   // 第三欄＝要連續幾天才撿得到
+const daily = (() => {
+  const key = "isl-day-" + D.case, day = d => d.toLocaleDateString("sv"), today = day(new Date());
+  let s = null; try { s = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
+  s = s || {last: "", streak: 0, got: []};
+  const first = !s.last, isNew = s.last !== today;
+  if (isNew) {
+    s.streak = s.last === day(new Date(Date.now() - 864e5)) ? s.streak + 1 : 1;
+    const open = FINDS.map((f, i) => i).filter(i => (FINDS[i][2] || 0) <= s.streak), fresh = open.filter(i => !s.got.includes(i));
+    const rare = fresh.filter(i => FINDS[i][2]), pool = rare.length ? rare : fresh.length ? fresh : open;   // 剛解鎖的稀有品優先
+    s.item = pool[Math.floor(Math.random() * pool.length)];
+    if (!s.got.includes(s.item)) s.got.push(s.item);
+    s.last = today;
+    try { localStorage.setItem(key, JSON.stringify(s)); } catch {}
+  }
+  return {first, isNew, ...s};
+})();
+const bagHTML = () => `<div class="passport bag">${FINDS.map((f, i) => { const g = daily.got.includes(i);
+  return `<div class="stamp${g ? " got" : ""}"><span>${g ? f[0] : "❔"}</span>${g ? f[1] : f[2] ? `連續 ${f[2]} 天` : "還沒撿到"}</div>`; }).join("")}</div>`;
+function openDaily() {
+  const f = FINDS[daily.item], next = FINDS.find(x => x[2] && x[2] > daily.streak);
+  openModal(`<p class="kicker">🎒 連續第 ${daily.streak} 天上島</p><h2>今天在岸邊撿到 ${f[0]} ${f[1]}</h2>
+    <p class="lead">${next ? `再連續 ${next[2] - daily.streak} 天，就有機會撿到 ${next[0]} ${next[1]}。` : "最稀有的寶物都解鎖了，明天繼續來補齊背包！"}背包 ${daily.got.length} / ${FINDS.length}。</p>
+    ${bagHTML()}<button class="btn primary" data-close style="width:100%">收進背包，去逛島 →</button>
+    <p class="note" style="text-align:center">背包記在這支手機上</p>`);
+  if ([3, 5, 7].includes(daily.streak)) setTimeout(burst, 300);
+}
 function openPass() {
   const open = ISL.filter(i => !i.soon);
   openModal(`<p class="kicker">📒 島民護照</p><h2>逛過 ${[...passport].filter(id => byId[id] && !byId[id].soon).length} / ${open.length} 座島</h2><p class="lead">點每一座島就能蓋章，全部蓋滿成為榮譽島民。</p>
-    <div class="passport">${ISL.map(i => `<div class="stamp${passport.has(i.id) ? " got" : ""}"><span>${i.ic}</span>${i.soon ? "即將開放" : i.name}</div>`).join("")}</div>`);
+    <div class="passport">${ISL.map(i => `<div class="stamp${passport.has(i.id) ? " got" : ""}"><span>${i.ic}</span>${i.soon ? "即將開放" : i.name}</div>`).join("")}</div>
+    <div class="sec"><h3>🎒 撿寶背包 ${daily.got.length} / ${FINDS.length}・連續 ${daily.streak} 天</h3>${bagHTML()}</div>`);
 }
 $("bQuiz").onclick = openQuiz; $("bPhrase").onclick = openPhrase; $("bPass").onclick = openPass;
 if (!D.phrases) $("bPhrase").remove();  // 日語卡只給日語社群
@@ -1134,10 +1165,12 @@ applyTime();
 tick();
 setTimeout(() => {
   $("loader").classList.add("done");
+  if (!daily.first) { if (daily.isNew) openDaily(); return; }
   openModal(`<div class="intro"><p class="kicker">歡迎來到</p><h2>${D.island}</h2><ul>
     <li><span>🏝️</span><p><b>一座島＝島上的一件事</b>廣場是大家住的地方，碼頭迎接新朋友${HAS_LOY ? "，神社打卡、市集換禮物" : ""}。</p></li>
     <li><span>💡</span><p><b>燈亮＝有人在</b>拉下面的時間軸，看島從清晨到深夜怎麼亮起來。</p></li>
     <li><span>📒</span><p><b>點島蓋章</b>每逛一座島蓋一個章，全部蓋滿成為榮譽島民。</p></li>
+    <li><span>🎒</span><p><b>每天上島撿一樣寶</b>今天撿到 ${FINDS[daily.item][0]} ${FINDS[daily.item][1]}，連續來越撿得到稀有的。</p></li>
     <li><span>🧭</span><p><b>你是哪種島民？</b>三題小測驗，拿一張可以分享的身分卡。</p></li></ul>
     <button class="btn primary" data-close style="width:100%">開始逛 →</button></div>`);
 }, 900);

@@ -163,6 +163,7 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 .stamp span{font-size:26px;filter:grayscale(1);opacity:.5}
 .stamp.got{border:3px solid #d7263d;color:#d7263d;transform:rotate(-8deg);background:#fff6f2}
 .stamp.got span{filter:none;opacity:1}
+.passport.bag{grid-template-columns:repeat(4,1fr);gap:8px}.bag .stamp{font-size:11px;padding:2px}.bag .stamp span{font-size:22px}
 .toast{position:fixed;left:50%;top:calc(116px + env(safe-area-inset-top));z-index:50;transform:translateX(-50%);padding:10px 16px;border-radius:99px;background:#14213ded;color:#fff;font-size:13.5px;font-weight:800;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap}
 .toast.on{opacity:1}
 #loader{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 10%,#ffd9a8,#ff8a5c 38%,#3b2a6b);color:#fff;text-align:center;transition:opacity .8s,visibility .8s}
@@ -204,7 +205,7 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
   <button class="dk" id="bShare">📤 分享</button>
 </nav>
 
-<aside class="panel" id="panel">
+<aside class="panel short" id="panel">
   <div class="grab" id="grab"><i></i></div>
   <div class="timebar">
     <div class="tb-row">
@@ -1029,10 +1030,40 @@ function openPhrase() {
   $("again").onclick = openPhrase;
   $("shP").onclick = () => share(`今天在「${D.island}」抽到：${p[0]}（${p[2]}）🎴 你也來抽一句！`);
 }
+// ── 每日上島撿寶：每天第一次上島撿一樣東西，連續天數越多越撿得到稀有的（只記在這支手機） ──
+const FINDS = [["🐚", "貝殼"], ["🪸", "珊瑚"], ["⭐", "海星"], ["🍶", "漂流瓶"], ["🪶", "海鷗羽毛"], ["🥥", "椰子"], ["💎", "海玻璃"], ["🦀", "小螃蟹"], ["🌺", "扶桑花"],
+  ["🗝️", "古老鑰匙", 3], ["🧭", "舊羅盤", 5], ["👑", "人魚皇冠", 7]];   // 第三欄＝要連續幾天才撿得到
+const daily = (() => {
+  const key = "isl-day-" + D.case, day = d => d.toLocaleDateString("sv"), today = day(new Date());
+  let s = null; try { s = JSON.parse(localStorage.getItem(key) || "null"); } catch {}
+  s = s || {last: "", streak: 0, got: []};
+  const first = !s.last, isNew = s.last !== today;
+  if (isNew) {
+    s.streak = s.last === day(new Date(Date.now() - 864e5)) ? s.streak + 1 : 1;
+    const open = FINDS.map((f, i) => i).filter(i => (FINDS[i][2] || 0) <= s.streak), fresh = open.filter(i => !s.got.includes(i));
+    const rare = fresh.filter(i => FINDS[i][2]), pool = rare.length ? rare : fresh.length ? fresh : open;   // 剛解鎖的稀有品優先
+    s.item = pool[Math.floor(Math.random() * pool.length)];
+    if (!s.got.includes(s.item)) s.got.push(s.item);
+    s.last = today;
+    try { localStorage.setItem(key, JSON.stringify(s)); } catch {}
+  }
+  return {first, isNew, ...s};
+})();
+const bagHTML = () => `<div class="passport bag">${FINDS.map((f, i) => { const g = daily.got.includes(i);
+  return `<div class="stamp${g ? " got" : ""}"><span>${g ? f[0] : "❔"}</span>${g ? f[1] : f[2] ? `連續 ${f[2]} 天` : "還沒撿到"}</div>`; }).join("")}</div>`;
+function openDaily() {
+  const f = FINDS[daily.item], next = FINDS.find(x => x[2] && x[2] > daily.streak);
+  openModal(`<p class="kicker">🎒 連續第 ${daily.streak} 天上島</p><h2>今天在岸邊撿到 ${f[0]} ${f[1]}</h2>
+    <p class="lead">${next ? `再連續 ${next[2] - daily.streak} 天，就有機會撿到 ${next[0]} ${next[1]}。` : "最稀有的寶物都解鎖了，明天繼續來補齊背包！"}背包 ${daily.got.length} / ${FINDS.length}。</p>
+    ${bagHTML()}<button class="btn primary" data-close style="width:100%">收進背包，去逛島 →</button>
+    <p class="note" style="text-align:center">背包記在這支手機上</p>`);
+  if ([3, 5, 7].includes(daily.streak)) setTimeout(burst, 300);
+}
 function openPass() {
   const open = ISL.filter(i => !i.soon);
   openModal(`<p class="kicker">📒 島民護照</p><h2>逛過 ${[...passport].filter(id => byId[id] && !byId[id].soon).length} / ${open.length} 座島</h2><p class="lead">點每一座島就能蓋章，全部蓋滿成為榮譽島民。</p>
-    <div class="passport">${ISL.map(i => `<div class="stamp${passport.has(i.id) ? " got" : ""}"><span>${i.ic}</span>${i.soon ? "即將開放" : i.name}</div>`).join("")}</div>`);
+    <div class="passport">${ISL.map(i => `<div class="stamp${passport.has(i.id) ? " got" : ""}"><span>${i.ic}</span>${i.soon ? "即將開放" : i.name}</div>`).join("")}</div>
+    <div class="sec"><h3>🎒 撿寶背包 ${daily.got.length} / ${FINDS.length}・連續 ${daily.streak} 天</h3>${bagHTML()}</div>`);
 }
 $("bQuiz").onclick = openQuiz; $("bPhrase").onclick = openPhrase; $("bPass").onclick = openPass;
 if (!D.phrases) $("bPhrase").remove();  // 日語卡只給日語社群
@@ -1134,10 +1165,12 @@ applyTime();
 tick();
 setTimeout(() => {
   $("loader").classList.add("done");
+  if (!daily.first) { if (daily.isNew) openDaily(); return; }
   openModal(`<div class="intro"><p class="kicker">歡迎來到</p><h2>${D.island}</h2><ul>
     <li><span>🏝️</span><p><b>一座島＝島上的一件事</b>廣場是大家住的地方，碼頭迎接新朋友${HAS_LOY ? "，神社打卡、市集換禮物" : ""}。</p></li>
     <li><span>💡</span><p><b>燈亮＝有人在</b>拉下面的時間軸，看島從清晨到深夜怎麼亮起來。</p></li>
     <li><span>📒</span><p><b>點島蓋章</b>每逛一座島蓋一個章，全部蓋滿成為榮譽島民。</p></li>
+    <li><span>🎒</span><p><b>每天上島撿一樣寶</b>今天撿到 ${FINDS[daily.item][0]} ${FINDS[daily.item][1]}，連續來越撿得到稀有的。</p></li>
     <li><span>🧭</span><p><b>你是哪種島民？</b>三題小測驗，拿一張可以分享的身分卡。</p></li></ul>
     <button class="btn primary" data-close style="width:100%">開始逛 →</button></div>`);
 }, 900);

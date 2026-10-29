@@ -238,7 +238,7 @@ const ISL = [
   {id: "dock", name: "新手碼頭", ic: "⛵", pos: [-10.5, 6.5], r: 2, kind: "dock"},
   {id: "shrine", name: "打卡神社", ic: "⛩️", pos: [10.5, 5.5], r: 2, kind: "shrine", soon: !HAS_LOY},
   {id: "market", name: "福利社市集", ic: "🎁", pos: [9.5, -7], r: 2, kind: "market", soon: !HAS_LOY},
-  {id: "tower", name: "週" + WD[peakW] + "燈塔", ic: "🗼", pos: [-9, -7.5], r: 1, kind: "tower"},
+  {id: "tower", name: peak ? "週" + WD[peakW] + "燈塔" : "等待點亮的燈塔", ic: "🗼", pos: [-9, -7.5], r: 1, kind: "tower"},
 ];
 const byId = Object.fromEntries(ISL.map(i => [i.id, i]));
 
@@ -494,13 +494,13 @@ const up = (a, b) => b != null && a > b ? `<span class="up">比上週多 ${fmt(a
 function heroLine() {
   const {w, h} = state, n = grid[`${w}-${h}`] || 0;
   if (w === peakW && h === peakH) return `現在是全島最亮的時刻！<br>近 ${CH.days || 28} 天的週${WD[w]} ${h}:00，大家${ACT.v} <b>${fmt(n)}</b> ${ACT.u}`;
-  if (n === 0) return `週${WD[w]} ${h}:00，島上大家都睡了 💤<br>最熱鬧的是週${WD[peakW]} ${peakH}:00`;
+  if (n === 0) return `週${WD[w]} ${h}:00，島上大家都睡了 💤<br>${peak ? `最熱鬧的是週${WD[peakW]} ${peakH}:00` : "還在等第一位島民來點亮"}`;
   return `週${WD[w]} ${h}:00，島上熱度是最高峰的 <b>${Math.round(n / gmax * 100)}%</b>`;
 }
 const islandNum = id => ({plaza: [fmt(members), "島民"], dock: ["+" + fmt(newWeek), HAS_LOY ? "本週" : "每週"],
-  shrine: HAS_LOY ? [fmt(last.sub7), "次打卡"] : ["—", ""], market: HAS_LOY ? [fmt(last.red7), "次兌換"] : ["—", ""], tower: [`週${WD[peakW]}`, `${peakH}:00`]}[id]);
+  shrine: HAS_LOY ? [fmt(last.sub7), "次打卡"] : ["—", ""], market: HAS_LOY ? [fmt(last.red7), "次兌換"] : ["—", ""], tower: peak ? [`週${WD[peakW]}`, `${peakH}:00`] : ["—", ""]}[id]);
 const islandSub = id => ({plaza: "島民住的地方，燈亮＝有人在", dock: "新島民從這裡上岸", shrine: byId.shrine.soon ? "建設中，即將開放" : "每天打卡、完成任務",
-  market: byId.market.soon ? "建設中，即將開放" : "用點數換好禮", tower: "一週裡最熱鬧的一小時"}[id]);
+  market: byId.market.soon ? "建設中，即將開放" : "用點數換好禮", tower: peak ? "一週裡最熱鬧的一小時" : "近 28 天還沒有人點亮"}[id]);
 const card = d => { const [n, u] = islandNum(d.id); return `<button class="icard${d.soon ? " soon" : ""}" data-isl="${d.id}"><span class="ic">${d.ic}</span><span><b>${d.name}${passport.has(d.id) ? " ✅" : ""}</b><small>${islandSub(d.id)}</small></span><span class="n">${n}<small><br>${u}</small></span></button>`; };
 function renderHome() {
   pb.innerHTML = `
@@ -542,6 +542,8 @@ function detail(id) {
     head(`本週打開 <b>${fmt(last.red7)}</b> 個寶箱`, `島民用點數換到的好禮。一個寶箱 ≈ 10 次兌換，近 30 天一共 ${fmt(L30.red30)} 次。`) +
     `<div class="stats"><div><b>${fmt(last.red7)}</b><span>本週兌換</span>${up(last.red7, prev?.red7)}</div><div><b>${fmt(L30.red30)}</b><span>30 天兌換</span></div><div><b>${fmt(L30.spent30)}</b><span>30 天用掉點數</span></div></div>` +
     (D.app_url ? `<div class="cta"><a class="btn primary" href="${D.app_url}" target="_blank" rel="noopener">🎁 去換好禮</a></div>` : "");
+  if (id === "tower" && !peak) return head("燈塔還在等人點亮 🕯️", `近 ${CH.days || 28} 天還沒有人${SYS ? "打卡" : "說話"}。第一個上島的人，就是點亮燈塔的人。`) +
+    (D.join_url ? `<div class="cta"><a class="btn primary" href="${D.join_url}" target="_blank" rel="noopener">⛵ 我來點亮</a></div>` : "");
   if (id === "tower") return head(`每週${WD[peakW]} <b>${peakH}:00</b> 全島最亮`, `近 ${CH.days || 28} 天，這個時段大家${SYS ? "" : "在群裡"}${ACT.v} ${fmt(grid[`${peakW}-${peakH}`])} ${ACT.u}，是一週裡最熱鬧的一小時。`) +
     `<div class="sec"><h3>週${WD[peakW]}的一天</h3>${spark(dayHeat(peakW), peakH)}</div>` +
     `<div class="cta"><button class="btn primary" data-act="jump">⏱ 把時間撥到週${WD[peakW]} ${peakH}:00</button></div>`;

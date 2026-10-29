@@ -7,6 +7,10 @@
 <script>document.documentElement.classList.add("js")</script>
 <meta name="description" content="一座會隨時間亮起來的社群群島">
 <meta name="theme-color" content="#14213d">
+<meta property="og:image" content="https://island.bicome.cc/35global/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta property="og:type" content="website">
 <meta property="og:title" content="置產大富翁島｜來島上逛逛">
 <meta property="og:description" content="看看這座島什麼時候最熱鬧、測測你是哪一型島民，再上島一起聊。">
@@ -108,6 +112,16 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 .btn.primary{background:linear-gradient(180deg,#ff7448,#e8412c);color:#fff;box-shadow:0 3px #b52a17}
 .cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .back{border:0;background:none;color:var(--red);font-weight:800;font-size:13px;padding:0;margin-bottom:8px;cursor:pointer}
+.news{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:9px 12px;border-radius:13px;background:#14213d;color:#fff;font-size:13px;font-weight:700;min-height:38px}
+.news em{flex:none;font-style:normal;font-size:10.5px;font-weight:900;letter-spacing:.08em;padding:2px 7px;border-radius:99px;background:#e8412c}
+.news span{transition:opacity .35s,transform .35s}.news span.out{opacity:0;transform:translateY(6px)}
+.lvl{margin-top:12px;padding:13px 14px;border-radius:16px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line)}
+.lvl-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.lvl-top b{font-size:15px;font-weight:900}.lvl-top b i{font-style:normal;color:var(--red);margin-right:4px}
+.lvl-top small{font-size:12px;color:var(--ink-3);font-weight:700;text-align:right}
+.bar{position:relative;height:10px;margin:9px 0 10px;border-radius:99px;background:#f1eadd;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:linear-gradient(90deg,#ffbd73,#e8412c);transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.lvl .btn{width:100%}
 .note{margin:22px 0 0;font-size:11.5px;line-height:1.6;color:var(--ink-3)}
 .modal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:20px}
 .modal[hidden]{display:none}
@@ -217,6 +231,10 @@ const HAS_LOY = !!last;
 // 只有會員系統、沒有 LINE 社群的品牌：熱度改用系統打卡時間算，用語跟著換
 const SYS = D.mode === "system", ACT = SYS ? {v: "打卡了", u: "次", did: "打卡過", heat: "打卡"} : {v: "聊了", u: "則", did: "說過話", heat: "聊天"};
 const members = Math.max(HAS_LOY ? last.members : 0, C.speakers || 0, CH.speakers || 0);  // 系統會員與群組說過話的人取大，島民不低報
+// 島嶼等級：島民數到門檻就升級；只講「再幾位升級」，邀人上島比列排名更有動力
+const LV = [[0, "荒島"], [30, "小村"], [100, "小鎮"], [300, "港城"], [800, "大港"], [1500, "群島之都"], [5000, "傳說之島"]];
+const lvI = LV.reduce((k, [m], i) => members >= m ? i : k, 0), lvNext = LV[lvI + 1];
+const lvPct = lvNext ? Math.round((members - LV[lvI][0]) / (lvNext[0] - LV[lvI][0]) * 100) : 100;
 const newWeek = HAS_LOY && prev ? last.members - prev.members : Math.round((C.joined30 || 0) / 4);
 const WD = ["一", "二", "三", "四", "五", "六", "日"];
 const grid = CH.grid || {};
@@ -228,7 +246,7 @@ const dayHeat = w => Array.from({length: 24}, (_, h) => grid[`${w}-${h}`] || 0);
 
 document.title = D.island;
 $("brandName").textContent = D.island;
-$("brandSub").textContent = D.case;
+$("brandSub").textContent = `${D.case} · Lv.${lvI + 1} ${LV[lvI][1]}`;
 $("ldName").textContent = D.island;
 $("logoCh").textContent = [...D.island][0];
 
@@ -441,6 +459,7 @@ function applyTime() {
   hemi.color.set(d > .3 ? 0xffffff : 0x9db4ff); hemi.intensity = .6 + d * .6;
   plazaLight.intensity = (1 - d) * (1.5 + heat * 8);
   const isPeak = w === peakW && h === peakH;
+  fwOn = !!peak && isPeak;
   towerLight.intensity = (1 - d) * 3 + (isPeak ? 6 : 0); beam.material.opacity = (1 - d) * (.1 + (isPeak ? .14 : 0)); beam.visible = d < .6;
   $("tbTime").innerHTML = `週${WD[w]} ${String(h).padStart(2, "0")}:00<small>${PERIOD(h)}</small>`;
   $("hour").value = h;
@@ -502,8 +521,24 @@ const islandNum = id => ({plaza: [fmt(members), "島民"], dock: ["+" + fmt(newW
 const islandSub = id => ({plaza: "島民住的地方，燈亮＝有人在", dock: "新島民從這裡上岸", shrine: byId.shrine.soon ? "建設中，即將開放" : "每天打卡、完成任務",
   market: byId.market.soon ? "建設中，即將開放" : "用點數換好禮", tower: peak ? "一週裡最熱鬧的一小時" : "近 28 天還沒有人點亮"}[id]);
 const card = d => { const [n, u] = islandNum(d.id); return `<button class="icard${d.soon ? " soon" : ""}" data-isl="${d.id}"><span class="ic">${d.ic}</span><span><b>${d.name}${passport.has(d.id) ? " ✅" : ""}</b><small>${islandSub(d.id)}</small></span><span class="n">${n}<small><br>${u}</small></span></button>`; };
+// 島上快報：本週發生的事輪播，讓第一眼就覺得島是活的
+const NEWS = [
+  newWeek > 0 && `⛵ 本週有 <b>${fmt(newWeek)}</b> 位新島民上岸`,
+  HAS_LOY && last.a1 > 0 && `🔥 今天已經有 <b>${fmt(last.a1)}</b> 位島民上島`,
+  HAS_LOY && last.sub7 > 0 && `⛩️ 本週大家打卡 <b>${fmt(last.sub7)}</b> 次${prev && last.sub7 > prev.sub7 ? "，比上週多" : ""}`,
+  HAS_LOY && last.red7 > 0 && `🎁 本週打開了 <b>${fmt(last.red7)}</b> 個寶箱`,
+  peak && `🗼 每週${WD[peakW]} ${peakH}:00 全島最亮，約好一起上線`,
+  lvNext && `🏗️ 再 <b>${fmt(lvNext[0] - members)}</b> 位島民，全島升級成「${lvNext[1]}」`,
+].filter(Boolean);
+let newsI = 0;
+setInterval(() => {
+  const el = $("news"); if (!el || NEWS.length < 2) return;
+  el.classList.add("out");
+  setTimeout(() => { newsI++; el.innerHTML = NEWS[newsI % NEWS.length]; el.classList.remove("out"); }, 350);
+}, 3800);
 function renderHome() {
   pb.innerHTML = `
+    ${NEWS.length ? `<div class="news"><em>島上快報</em><span id="news">${NEWS[newsI % NEWS.length]}</span></div>` : ""}
     <div class="hero"><p class="kicker">${D.island} · 時間軸上的這一刻</p><h2>${heroLine()}</h2>
       <p class="lead">拉上面的時間軸，看島從清晨到深夜怎麼亮起來；點任何一座島，看那裡在發生什麼。</p></div>
     <div class="stats">
@@ -511,6 +546,8 @@ function renderHome() {
       <div><b>${fmt(HAS_LOY ? last.a7 : C.active14)}</b><span>${HAS_LOY ? "本週上島" : "兩週內說過話"}</span>${HAS_LOY ? up(last.a7, prev?.a7) : ""}</div>
       <div><b>+${fmt(newWeek)}</b><span>${HAS_LOY ? "本週新島民" : "每週新島民"}</span></div>
     </div>
+    <div class="lvl"><div class="lvl-top"><b><i>Lv.${lvI + 1}</i>${LV[lvI][1]}</b><small>${lvNext ? `再 ${fmt(lvNext[0] - members)} 位島民<br>升級成「${lvNext[1]}」` : "已經是最高等級 👑"}</small></div>
+      <div class="bar"><i style="width:${lvPct}%"></i></div><button class="btn" data-act="invite">📤 邀朋友上島，一起把島升級</button></div>
     <div class="sec"><h3>五座島</h3><div class="cards">${ISL.map(card).join("")}</div></div>
     <div class="cta"><button class="btn primary" data-act="quiz">🧭 測我是哪種島民</button>${D.join_url ? `<a class="btn" href="${D.join_url}" target="_blank" rel="noopener">⛵ 上島</a>` : ""}</div>
     <p class="note">一棟房子 ≈ ${fmt(perHouse)} 位島民。數據更新：${last ? last.d : (CH.as_of || C.as_of || "")}。只呈現全島合計，不含任何個人資料。</p>`;
@@ -553,6 +590,7 @@ pb.onclick = e => {
   const a = e.target.closest("[data-act]")?.dataset.act;
   if (a === "home") select(null);
   if (a === "quiz") openQuiz();
+  if (a === "invite") share(lvNext ? `我在「${D.island}」，再 ${fmt(lvNext[0] - members)} 位島民就能升級成「${lvNext[1]}」🏝 來幫忙上島！` : `「${D.island}」已經是最高等級的傳說之島 👑 一起來逛！`);
   if (a === "jump") { state.w = peakW; state.h = peakH; applyTime(); select("tower"); }
 };
 
@@ -721,6 +759,30 @@ function resize() {
 }
 addEventListener("resize", resize); resize();
 camera.position.set(26, 30, 34); controls.target.set(0, 0, 0);
+// ── 煙火：時間撥到全島最熱鬧的時段就在廣場上空放 ─────
+const FW_COLORS = [0xffcf3f, 0xff8a3d, 0xe8412c, 0x12a594, 0x9db4ff, 0xffffff], fws = [];
+let fwOn = false, fwWait = 0;
+function firework() {
+  const n = 110, g = new THREE.BufferGeometry(), p = new Float32Array(n * 3), v = [];
+  const o = new THREE.Vector3((Math.random() - .5) * 14, 7 + Math.random() * 3, (Math.random() - .5) * 12);
+  for (let i = 0; i < n; i++) {
+    p.set([o.x, o.y, o.z], i * 3);
+    const th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1), sp = 4 + Math.random() * 2.5;
+    v.push(new THREE.Vector3(Math.sin(ph) * Math.cos(th), Math.cos(ph), Math.sin(ph) * Math.sin(th)).multiplyScalar(sp));
+  }
+  g.setAttribute("position", new THREE.BufferAttribute(p, 3));
+  const m = new THREE.PointsMaterial({color: FW_COLORS[Math.random() * FW_COLORS.length | 0], size: .75, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending});
+  const pts = new THREE.Points(g, m); scene.add(pts); fws.push({pts, v, life: 0});
+}
+function tickFireworks(dt) {
+  if (fwOn && (fwWait -= dt) <= 0) { firework(); fwWait = .45 + Math.random() * .7; }
+  for (let k = fws.length - 1; k >= 0; k--) {
+    const f = fws[k], a = f.pts.geometry.attributes.position; f.life += dt;
+    f.v.forEach((v, i) => { v.multiplyScalar(1 - dt * 1.6); v.y -= 3.2 * dt; a.array[i * 3] += v.x * dt; a.array[i * 3 + 1] += v.y * dt; a.array[i * 3 + 2] += v.z * dt; });
+    a.needsUpdate = true; f.pts.material.opacity = Math.max(0, 1 - f.life / 1.7);
+    if (f.life > 1.7) { scene.remove(f.pts); f.pts.geometry.dispose(); f.pts.material.dispose(); fws.splice(k, 1); }
+  }
+}
 const clock = new THREE.Clock();
 function tick() {
   const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
@@ -732,6 +794,7 @@ function tick() {
   arcs.forEach(a => { a.t = (a.t + dt * .25) % 1; a.dot.position.copy(a.curve.getPoint(a.t)); });
   clouds.forEach(c => { c.position.x += c.userData.v * dt; if (c.position.x > 50) c.position.x = -50; });
   beamPivot.rotation.y = t * .8;
+  tickFireworks(dt);
   chests.forEach((c, i) => c.position.y = c.userData.y + Math.max(0, Math.sin(t * 2 + i)) * .12);
   if (fly) { fly.t = Math.min(1, fly.t + dt * 1.4); const e = 1 - Math.pow(1 - fly.t, 3); controls.target.lerpVectors(fly.fromT, fly.toT, e); camera.position.lerpVectors(fly.fromP, fly.toP, e); if (fly.t >= 1) fly = null; }
   controls.update(); renderer.render(scene, camera); updateLabels(false);

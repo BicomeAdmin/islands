@@ -17,7 +17,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/camera-controls@2.9.0/dist/camera-controls.module.js">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js" defer></script>
 <style>
 :root{
   --font:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
@@ -42,6 +45,7 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 .isl.sel{box-shadow:0 0 0 3px #ffcf3f,0 6px 18px #14213d55}
 .isl.got .ic{background:#ffe08a}
 .isl.mini{padding:2px 8px 2px 2px;font-size:11.5px;gap:4px;background:#fffffff0}.isl.mini .ic{width:20px;height:20px;font-size:11px}
+.isl.mini .pt{font-style:normal;margin-left:2px;padding:2px 6px;border-radius:99px;background:#fff1c7;color:#b45309;font-size:10.5px;font-weight:900}
 .isl.mini.ev{background:#e8412c;color:#fff;font-size:12.5px;padding:3px 10px 3px 3px}.isl.mini.ev .ic{width:24px;height:24px;font-size:13px;background:#fff}
 .opt{margin:8px 0}.opt .ot{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;font-weight:700;margin-bottom:4px}.opt .ot b{flex:none;color:var(--ink-3,#8a93a6)}
 .opt .ob{height:8px;border-radius:99px;background:#f1eadd;overflow:hidden}.opt .ob i{display:block;height:100%;border-radius:99px;background:#c9cfda}
@@ -54,6 +58,9 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 .logo{flex:none;display:grid;place-items:center;width:36px;height:40px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,#ff8a4c,#e8412c 70%);color:#fff;font-weight:900;font-size:17px}
 .brand b{display:block;font-size:17px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand small{display:block;font-size:11px;font-weight:700;color:#8a93a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tohome{flex:none;display:flex;align-items:center;height:36px;padding:0 12px;border-radius:14px;background:#fffffff2;color:#1d2433;box-shadow:0 6px 18px #14213d29;font-weight:800;font-size:13px;text-decoration:none;white-space:nowrap}
+.tohome[hidden]{display:none}
+@media (max-width:420px){.tohome span{display:none}}
 .count{flex:none;margin-left:auto;display:flex;align-items:baseline;gap:5px;padding:8px 13px;border-radius:14px;background:#fffffff2;color:#1d2433;box-shadow:0 6px 18px #14213d29}
 .count b{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums}
 .count small{font-size:12px;font-weight:700;color:#4a5468}
@@ -116,6 +123,13 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border:0;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line);font:800 14.5px/1.2 var(--font);color:var(--ink);cursor:pointer;text-decoration:none}
 .btn.primary{background:linear-gradient(180deg,#ff7448,#e8412c);color:#fff;box-shadow:0 3px #b52a17}
 .cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.how{margin:12px 0 0;padding:12px 14px;border-radius:14px;background:#fff6e0;font-size:14px;line-height:1.65;color:var(--ink-2)}
+.how b{color:var(--ink)}
+.shbox{text-align:center}.shbox .share-img{max-width:240px}
+.shgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.shgrid .btn{width:100%;box-sizing:border-box}
+.shgrid>:last-child:nth-child(odd){grid-column:1/-1}
+.btn.line{background:#06c755;color:#fff;box-shadow:0 3px #04913e}
 .back{border:0;background:none;color:var(--red);font-weight:800;font-size:13px;padding:0;margin-bottom:8px;cursor:pointer}
 .news{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:9px 12px;border-radius:13px;background:#14213d;color:#fff;font-size:13px;font-weight:700;min-height:38px}
 .news em{flex:none;font-style:normal;font-size:10.5px;font-weight:900;letter-spacing:.08em;padding:2px 7px;border-radius:99px;background:#e8412c}
@@ -196,13 +210,14 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 
 <header class="top">
   <div class="brand"><div class="logo" id="logoCh">島</div><div><b id="brandName"></b><small id="brandSub"></small></div></div>
+  <a class="tohome" id="toHome" href="/" hidden>🗺<span>&nbsp;全部島嶼</span></a>
   <div class="count"><b id="cnt">0</b><small>位島民</small></div>
 </header>
 <nav class="dock">
-  <button class="dk primary" id="bQuiz">🧭 我是哪種島民</button>
+  <button class="dk primary" id="bShare">📤 分享這座島</button>
+  <button class="dk" id="bQuiz">🧭 我是哪種島民</button>
   <button class="dk" id="bPhrase">🎴 抽今日一句</button>
   <button class="dk" id="bPass">📒 護照 <em id="passN">0</em></button>
-  <button class="dk" id="bShare">📤 分享</button>
 </nav>
 
 <aside class="panel short" id="panel">
@@ -223,7 +238,17 @@ button{font-family:var(--font);color:inherit;-webkit-tap-highlight-color:transpa
 <div class="toast" id="toast"></div>
 <div id="loader"><div><h1 id="ldName">壹品藥局島</h1><p class="ld-msg">正在填海造島…</p><div class="ld-static"><b>71</b> 位島民 ・ 最熱鬧 週三 10:00<small>這是互動島（3D 群島、時間軸、島民測驗）。在 Lark 裡只能看到這張卡，請按右上角「下載」後用瀏覽器開啟。</small></div></div></div>
 
-<script>window.ISLAND_DATA = {"case": "壹品藥局", "mode": "community", "island": "壹品藥局島", "join_url": "", "app_url": "https://liff.line.me/2008558619-05xDrAVE?projectId=cmnh7uupd011xa37lgdw4fctc", "phrases": false, "loyalty": [{"d": "2026-09-29", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 64, "a1": 5, "a7": 17, "a30": 26, "sub7": 11, "red7": 0}, {"d": "2026-09-30", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 64, "a1": 6, "a7": 14, "a30": 27, "sub7": 9, "red7": 0}, {"d": "2026-10-01", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 64, "a1": 3, "a7": 10, "a30": 27, "sub7": 8, "red7": 0}, {"d": "2026-10-02", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 64, "a1": 3, "a7": 8, "a30": 27, "sub7": 7, "red7": 0}, {"d": "2026-10-03", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 65, "a1": 3, "a7": 9, "a30": 27, "sub7": 7, "red7": 0}, {"d": "2026-10-04", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 66, "a1": 4, "a7": 10, "a30": 28, "sub7": 8, "red7": 0}, {"d": "2026-10-05", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 4, "a7": 10, "a30": 29, "sub7": 13, "red7": 0}, {"d": "2026-10-06", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 4, "a7": 9, "a30": 28, "sub7": 13, "red7": 0}, {"d": "2026-10-07", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 4, "a7": 8, "a30": 28, "sub7": 15, "red7": 0}, {"d": "2026-10-08", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 4, "a7": 7, "a30": 26, "sub7": 15, "red7": 0}, {"d": "2026-10-09", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 2, "a7": 6, "a30": 26, "sub7": 15, "red7": 0}, {"d": "2026-10-10", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 3, "a7": 6, "a30": 25, "sub7": 16, "red7": 0}, {"d": "2026-10-11", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 2, "a7": 5, "a30": 25, "sub7": 16, "red7": 0}, {"d": "2026-10-12", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 5, "a7": 6, "a30": 26, "sub7": 12, "red7": 0}, {"d": "2026-10-13", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 68, "a1": 5, "a7": 7, "a30": 27, "sub7": 13, "red7": 0}, {"d": "2026-10-14", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 68, "a1": 3, "a7": 6, "a30": 26, "sub7": 12, "red7": 0}, {"d": "2026-10-15", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 68, "a1": 4, "a7": 9, "a30": 27, "sub7": 13, "red7": 2}, {"d": "2026-10-16", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 68, "a1": 5, "a7": 11, "a30": 27, "sub7": 15, "red7": 2}, {"d": "2026-10-17", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 12, "a30": 28, "sub7": 15, "red7": 2}, {"d": "2026-10-18", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 3, "a7": 12, "a30": 27, "sub7": 15, "red7": 2}, {"d": "2026-10-19", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 12, "a30": 27, "sub7": 17, "red7": 2}, {"d": "2026-10-20", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 12, "a30": 27, "sub7": 17, "red7": 2}, {"d": "2026-10-21", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 10, "a30": 27, "sub7": 17, "red7": 2}, {"d": "2026-10-22", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 9, "a30": 27, "sub7": 17, "red7": 0}, {"d": "2026-10-23", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 2, "a7": 8, "a30": 23, "sub7": 15, "red7": 0}, {"d": "2026-10-24", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 4, "a7": 8, "a30": 19, "sub7": 16, "red7": 0}, {"d": "2026-10-25", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 2, "a7": 8, "a30": 17, "sub7": 16, "red7": 0}, {"d": "2026-10-26", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 3, "a7": 8, "a30": 18, "sub7": 14, "red7": 0}, {"d": "2026-10-27", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 4, "a7": 8, "a30": 18, "sub7": 14, "red7": 0}, {"d": "2026-10-28", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 3, "a7": 7, "a30": 17, "sub7": 13, "red7": 0}, {"d": "2026-10-29", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 5, "a7": 6, "a30": 17, "sub7": 14, "red7": 0}, {"d": "2026-10-30", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 4, "a7": 8, "a30": 16, "sub7": 15, "red7": 0}, {"d": "2026-10-31", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 4, "a7": 9, "a30": 15, "sub7": 14, "red7": 0}, {"d": "2026-11-01", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 3, "a7": 8, "a30": 14, "sub7": 14, "red7": 0}, {"d": "2026-11-02", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 71, "a1": 5, "a7": 9, "a30": 15, "sub7": 14, "red7": 0}], "loyalty30": {}, "community": {"as_of": null, "speakers": 0, "active14": 0, "joined30": 0, "tags": {"好奇寶寶": 0, "破風手": 0, "聯繫員": 0, "推銷員": 0, "追隨者": 0}}, "chat": {"as_of": "2026-11-01", "days": 28, "grid": {"0-10": 12, "0-11": 19, "0-12": 7, "0-13": 6, "0-14": 10, "0-15": 13, "0-17": 7, "0-18": 9, "0-23": 5, "1-10": 9, "1-12": 3, "1-13": 2, "1-14": 22, "1-15": 11, "1-16": 16, "1-17": 11, "1-18": 11, "1-19": 1, "1-23": 4, "2-10": 24, "2-11": 6, "2-12": 7, "2-13": 9, "2-14": 14, "2-15": 8, "2-16": 12, "2-17": 13, "2-18": 16, "2-19": 7, "2-21": 1, "2-23": 4, "3-10": 9, "3-11": 2, "3-14": 20, "3-15": 12, "3-16": 11, "3-17": 9, "3-18": 10, "3-20": 2, "3-23": 4, "4-10": 15, "5-10": 4, "6-8": 1, "6-23": 2, "0-16": 7, "1-4": 1, "1-6": 1, "1-9": 1, "3-12": 6, "3-13": 4, "4-14": 8, "4-15": 13, "4-16": 3, "4-17": 15, "4-18": 10, "4-23": 3, "5-13": 3, "5-21": 1, "0-19": 1, "1-11": 7, "2-9": 6, "2-22": 3, "3-19": 4, "4-11": 1, "4-13": 7, "4-19": 1, "4-20": 1, "5-6": 1, "2-7": 1, "3-22": 1, "4-12": 2, "4-21": 1, "5-23": 1, "6-10": 1}, "speakers": 32, "region": {"北部": 2}, "region_tagged": 2}, "catalog": {"quests": [{"t": "每日VIP社群逛逛", "pts": 1, "n": 62}, {"t": "社群公約簽到", "pts": 2, "n": 2}, {"t": "【新手報到任務】壹品品粉報到", "pts": 20, "n": 1}], "gifts": [{"t": "台灣香檬發泡錠 維他命C 維他命A E B2 鋅 抗氧化", "cost": 1, "n": 2}, {"t": "[愛司盟]藥盒", "cost": 50, "n": 0}, {"t": "[維維樂]舒必克紫錐花超涼喉片 5包/袋", "cost": 150, "n": 0}, {"t": "[維維樂]小舒必克蜂膠兒童喉片 5包/袋", "cost": 150, "n": 0}, {"t": "[3M]軟式牙間刷-SSS0.7mm~M1.2mm 5支/包 ", "cost": 200, "n": 0}, {"t": "[CeraVe適樂膚]長效清爽保濕乳 5ml/包", "cost": 200, "n": 0}], "events": []}};</script>
+<script>window.ISLAND_DATA = {"case": "壹品藥局", "mode": "community", "island": "壹品藥局島", "join_url": "", "app_url": "https://liff.line.me/2008558619-05xDrAVE?projectId=cmnh7uupd011xa37lgdw4fctc", "phrases": false, "loyalty": [{"d": "2026-09-29", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 64, "a1": 5, "a7": 17, "a30": 26, "sub7": 11, "red7": 0}, {"d": "2026-09-30", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 64, "a1": 6, "a7": 14, "a30": 27, "sub7": 9, "red7": 0}, {"d": "2026-10-01", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 64, "a1": 3, "a7": 10, "a30": 27, "sub7": 8, "red7": 0}, {"d": "2026-10-02", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 64, "a1": 3, "a7": 8, "a30": 27, "sub7": 7, "red7": 0}, {"d": "2026-10-03", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 65, "a1": 3, "a7": 9, "a30": 27, "sub7": 7, "red7": 0}, {"d": "2026-10-04", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 66, "a1": 4, "a7": 10, "a30": 28, "sub7": 8, "red7": 0}, {"d": "2026-10-05", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 4, "a7": 10, "a30": 29, "sub7": 13, "red7": 0}, {"d": "2026-10-06", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 4, "a7": 9, "a30": 28, "sub7": 13, "red7": 0}, {"d": "2026-10-07", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 4, "a7": 8, "a30": 28, "sub7": 15, "red7": 0}, {"d": "2026-10-08", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 4, "a7": 7, "a30": 26, "sub7": 15, "red7": 0}, {"d": "2026-10-09", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 2, "a7": 6, "a30": 26, "sub7": 15, "red7": 0}, {"d": "2026-10-10", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 3, "a7": 6, "a30": 25, "sub7": 16, "red7": 0}, {"d": "2026-10-11", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 2, "a7": 5, "a30": 25, "sub7": 16, "red7": 0}, {"d": "2026-10-12", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 67, "a1": 5, "a7": 6, "a30": 26, "sub7": 12, "red7": 0}, {"d": "2026-10-13", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 68, "a1": 5, "a7": 7, "a30": 27, "sub7": 13, "red7": 0}, {"d": "2026-10-14", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 68, "a1": 3, "a7": 6, "a30": 26, "sub7": 12, "red7": 0}, {"d": "2026-10-15", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 68, "a1": 4, "a7": 9, "a30": 27, "sub7": 13, "red7": 2}, {"d": "2026-10-16", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 68, "a1": 5, "a7": 11, "a30": 27, "sub7": 15, "red7": 2}, {"d": "2026-10-17", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 12, "a30": 28, "sub7": 15, "red7": 2}, {"d": "2026-10-18", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 3, "a7": 12, "a30": 27, "sub7": 15, "red7": 2}, {"d": "2026-10-19", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 12, "a30": 27, "sub7": 17, "red7": 2}, {"d": "2026-10-20", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 12, "a30": 27, "sub7": 17, "red7": 2}, {"d": "2026-10-21", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 10, "a30": 27, "sub7": 17, "red7": 2}, {"d": "2026-10-22", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 5, "a7": 9, "a30": 27, "sub7": 17, "red7": 0}, {"d": "2026-10-23", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 2, "a7": 8, "a30": 23, "sub7": 15, "red7": 0}, {"d": "2026-10-24", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 4, "a7": 8, "a30": 19, "sub7": 16, "red7": 0}, {"d": "2026-10-25", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 69, "a1": 2, "a7": 8, "a30": 17, "sub7": 16, "red7": 0}, {"d": "2026-10-26", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 3, "a7": 8, "a30": 18, "sub7": 14, "red7": 0}, {"d": "2026-10-27", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 4, "a7": 8, "a30": 18, "sub7": 14, "red7": 0}, {"d": "2026-10-28", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 3, "a7": 7, "a30": 17, "sub7": 13, "red7": 0}, {"d": "2026-10-29", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 5, "a7": 6, "a30": 17, "sub7": 14, "red7": 0}, {"d": "2026-10-30", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 4, "a7": 8, "a30": 16, "sub7": 15, "red7": 0}, {"d": "2026-10-31", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 4, "a7": 9, "a30": 15, "sub7": 14, "red7": 0}, {"d": "2026-11-01", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 70, "a1": 3, "a7": 8, "a30": 14, "sub7": 14, "red7": 0}, {"d": "2026-11-02", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 71, "a1": 5, "a7": 9, "a30": 15, "sub7": 14, "red7": 0}, {"d": "2026-11-03", "sid": "cmnh7uupd011xa37lgdw4fctc", "members": 71, "a1": 5, "a7": 9, "a30": 14, "sub7": 13, "red7": 0}], "loyalty30": {}, "community": {"as_of": null, "speakers": 0, "active14": 0, "joined30": 0, "tags": {"好奇寶寶": 0, "破風手": 0, "聯繫員": 0, "推銷員": 0, "追隨者": 0}}, "chat": {"as_of": "2026-11-01", "days": 28, "grid": {"0-10": 12, "0-11": 19, "0-12": 7, "0-13": 6, "0-14": 10, "0-15": 13, "0-17": 7, "0-18": 9, "0-23": 5, "1-10": 9, "1-12": 3, "1-13": 2, "1-14": 22, "1-15": 11, "1-16": 16, "1-17": 11, "1-18": 11, "1-19": 1, "1-23": 4, "2-10": 24, "2-11": 6, "2-12": 7, "2-13": 9, "2-14": 14, "2-15": 8, "2-16": 12, "2-17": 13, "2-18": 16, "2-19": 7, "2-21": 1, "2-23": 4, "3-10": 9, "3-11": 2, "3-14": 20, "3-15": 12, "3-16": 11, "3-17": 9, "3-18": 10, "3-20": 2, "3-23": 4, "4-10": 15, "5-10": 4, "6-8": 1, "6-23": 2, "0-16": 7, "1-4": 1, "1-6": 1, "1-9": 1, "3-12": 6, "3-13": 4, "4-14": 8, "4-15": 13, "4-16": 3, "4-17": 15, "4-18": 10, "4-23": 3, "5-13": 3, "5-21": 1, "0-19": 1, "1-11": 7, "2-9": 6, "2-22": 3, "3-19": 4, "4-11": 1, "4-13": 7, "4-19": 1, "4-20": 1, "5-6": 1, "2-7": 1, "3-22": 1, "4-12": 2, "4-21": 1, "5-23": 1, "6-10": 1}, "speakers": 32, "region": {"北部": 2}, "region_tagged": 2}, "catalog": {"quests": [{"t": "每日VIP社群逛逛", "pts": 1, "n": 61}, {"t": "社群公約簽到", "pts": 2, "n": 2}, {"t": "【新手報到任務】壹品品粉報到", "pts": 20, "n": 1}], "gifts": [{"t": "台灣香檬發泡錠 維他命C 維他命A E B2 鋅 抗氧化", "cost": 1, "n": 2}, {"t": "[愛司盟]藥盒", "cost": 50, "n": 0}, {"t": "[維維樂]舒必克紫錐花超涼喉片 5包/袋", "cost": 150, "n": 0}, {"t": "[維維樂]小舒必克蜂膠兒童喉片 5包/袋", "cost": 150, "n": 0}, {"t": "[3M]軟式牙間刷-SSS0.7mm~M1.2mm 5支/包 ", "cost": 200, "n": 0}, {"t": "[CeraVe適樂膚]長效清爽保濕乳 5ml/包", "cost": 200, "n": 0}], "events": []}};</script>
+<script>
+// 3D 還在下載時先給人看數字；放在公開站才露出「全部島嶼」，並記下逛過哪幾座（首頁讀同一個 key）
+(() => { const D = window.ISLAND_DATA || {}, L = D.loyalty || [];
+  const n = Math.max(L.length ? L[L.length - 1].members : 0, (D.community || {}).speakers || 0, (D.chat || {}).speakers || 0);   // 同模組裡的 members
+  const m = document.querySelector("#loader .ld-msg"); if (m && n) m.textContent = `${Number(n).toLocaleString("zh-TW")} 位島民正在等你上岸…`;
+  if (location.hostname !== "island.bicome.cc") return;
+  document.getElementById("toHome").hidden = false;
+  const slug = location.pathname.split("/").filter(Boolean)[0];
+  try { const v = new Set(JSON.parse(localStorage.getItem("isl-visited") || "[]")); if (slug) v.add(slug); localStorage.setItem("isl-visited", JSON.stringify([...v])); } catch {} })();
+</script>
 <script type="module">
 import * as THREE from "three";
 import CameraControls from "https://cdn.jsdelivr.net/npm/camera-controls@2.9.0/dist/camera-controls.module.js";
@@ -774,7 +799,10 @@ for (const it of islets) if (it.kind === "event") {
 }
 for (const it of islets) if (it.kind === "quest" || it.kind === "gift") {
   const x = it.kind === "quest" ? QUESTS[it.i] : GIFTS[it.i], b = document.createElement("button");
-  b.className = "isl mini"; b.innerHTML = `<span class="ic">${it.kind === "quest" ? "⭐" : "🎁"}</span>${x.n ? fmt(x.n) + (it.kind === "quest" ? " 次" : " 換") : "新上架"}`;
+  // 只寫「120 次／33 換」島民看不懂是什麼，改成名稱＋點數（拿幾點／要幾點）
+  const st = x.t.split(D.case).join("").replace(/^[\s在將到於的｜|·\-]+/, "") || x.t;   // 品牌自己填的標題常以品牌名開頭，截短後只剩品牌名
+  const nm = esc(st.length > 8 ? st.slice(0, 8) + "…" : st), pt = it.kind === "quest" ? (x.pts ? `+${fmt(x.pts)} 點` : "") : (x.cost ? `${fmt(x.cost)} 點` : "新上架");
+  b.className = "isl mini"; b.innerHTML = `<span class="ic">${it.kind === "quest" ? "⭐" : "🎁"}</span>${nm}${pt ? `<em class="pt">${pt}</em>` : ""}`;
   b.onclick = () => selectIslet(it); $("labels").appendChild(b); it.el = b;
 }
 const v3 = new THREE.Vector3();
@@ -917,8 +945,12 @@ function isletDetail(it) {
   const head = `<button class="back" data-act="home">← 回群島總覽</button><p class="kicker">${q ? "⭐ 任務島" : "🎁 寶物島"} · 會員系統裡真的${q ? "任務" : "好禮"}</p><h2>${esc(x.t)}</h2>`;
   const lead = q ? `完成一次拿 <b>${fmt(x.pts)}</b> 點。近 30 天大家一共完成了 <b>${fmt(x.n)}</b> 次。` :
     `用 <b>${fmt(x.cost)}</b> 點就能換。${x.n ? `近 30 天被換走 <b>${fmt(x.n)}</b> 次。` : "最近剛上架，還沒有人換過，搶頭香！"}`;
+  // 好禮旁邊直接算給他看：拿最多人做的任務當例子，做幾次就換得到
+  const easy = !q && x.cost ? [...QUESTS].filter(o => o.pts > 0).sort((a, b) => b.n - a.n)[0] : null;
+  const how = easy ? `<div class="how"><b>怎麼換到？</b>做「${esc(easy.t.length > 16 ? easy.t.slice(0, 16) + "…" : easy.t)}」一次拿 ${fmt(easy.pts)} 點，<b>做 ${fmt(Math.ceil(x.cost / easy.pts))} 次</b>就換得到。</div>`
+    : q && x.pts && GIFTS.some(g => g.cost) ? (g => `<div class="how"><b>點數拿來做什麼？</b>存到 ${fmt(g.cost)} 點就能換「${esc(g.t.length > 16 ? g.t.slice(0, 16) + "…" : g.t)}」，做這個任務 <b>${fmt(Math.ceil(g.cost / x.pts))} 次</b>就夠。</div>`)([...GIFTS].filter(g => g.cost).sort((a, b) => a.cost - b.cost)[0]) : "";
   const others = list.map((o, k) => k === it.i ? "" : `<button class="chip" data-islet="${it.kind}-${k}">${q ? "⭐" : "🎁"} ${esc(o.t.length > 14 ? o.t.slice(0, 14) + "…" : o.t)}</button>`).join("");
-  return `${head}<p class="lead">${lead}</p>` +
+  return `${head}<p class="lead">${lead}</p>${how}` +
     (D.app_url ? `<div class="cta"><a class="btn primary" href="${D.app_url}" target="_blank" rel="noopener">${q ? "⛩️ 去做這個任務" : "🎁 去換這個好禮"}</a></div>` : "") +
     (others ? `<div class="sec"><h3>其他${q ? "任務島" : "寶物島"}</h3><div class="chips">${others}</div></div>` : "");
 }
@@ -1067,8 +1099,7 @@ function openPass() {
 }
 $("bQuiz").onclick = openQuiz; $("bPhrase").onclick = openPhrase; $("bPass").onclick = openPass;
 if (!D.phrases) $("bPhrase").remove();  // 日語卡只給日語社群
-$("bShare").onclick = async () => share(HAS_LOY ? `「${D.island}」本週有 ${fmt(last.a7)} 位島民上島、完成 ${fmt(last.sub7)} 次任務 🏝 一起來逛！` : `「${D.island}」已經有 ${fmt(members)} 位島民 🏝 一起來逛！`,
-  await shareCard(D.island, `${fmt(members)} 位島民的群島`));
+$("bShare").onclick = () => share(HAS_LOY ? `「${D.island}」本週有 ${fmt(last.a7)} 位島民上島、完成 ${fmt(last.sub7)} 次任務 🏝 一起來逛！` : `「${D.island}」已經有 ${fmt(members)} 位島民 🏝 一起來逛！`);
 
 async function shareCard(title, sub) {
   renderer.render(scene, camera);
@@ -1078,22 +1109,40 @@ async function shareCard(title, sub) {
   x.fillStyle = "#14213d"; x.fillRect(0, 0, 1080, 1350);
   if (shot.width) { const s = Math.max(1080 / shot.width, 960 / shot.height), sw = 1080 / s, sh = 960 / s; x.drawImage(shot, (shot.width - sw) / 2, Math.max(0, (shot.height - sh) / 2 - shot.height * .08), sw, sh, 0, 0, 1080, 960); }
   const g = x.createLinearGradient(0, 760, 0, 1350); g.addColorStop(0, "rgba(20,33,61,0)"); g.addColorStop(.3, "#14213d"); x.fillStyle = g; x.fillRect(0, 760, 1080, 590);
-  x.fillStyle = "#ffcf3f"; x.font = "800 40px 'Noto Sans TC',sans-serif"; x.fillText(D.island, 72, 1030);
-  x.fillStyle = "#fff"; x.font = "900 92px 'Noto Sans TC',sans-serif"; x.fillText(title, 72, 1140);
-  x.fillStyle = "#cfe0f2"; x.font = "700 40px 'Noto Sans TC',sans-serif"; x.fillText(sub, 72, 1205);
-  x.fillStyle = "#ff8a3d"; x.font = "800 34px 'Noto Sans TC',sans-serif"; x.fillText("你是哪一種島民？來測測看 →", 72, 1290);
+  // 右下角放 QR：圖片被單獨轉傳（LINE 常把文字跟圖拆開）也掃得回來
+  const qr = window.qrcode && (() => { const q = qrcode(0, "M"); q.addData(shareUrl()); q.make(); return q; })(), QS_ = 210, QX = 1080 - 72 - QS_, QY = 1010;
+  const tw = qr ? QX - 72 - 28 : 936;
+  x.fillStyle = "#ffcf3f"; x.font = "800 40px 'Noto Sans TC',sans-serif"; x.fillText(D.island, 72, 1030, tw);
+  x.fillStyle = "#fff"; x.font = "900 92px 'Noto Sans TC',sans-serif"; x.fillText(title, 72, 1140, tw);
+  x.fillStyle = "#cfe0f2"; x.font = "700 40px 'Noto Sans TC',sans-serif"; x.fillText(sub, 72, 1205, tw);
+  x.fillStyle = "#ff8a3d"; x.font = "800 34px 'Noto Sans TC',sans-serif"; x.fillText("你是哪一種島民？來測測看 →", 72, 1290, tw);
+  if (qr) {
+    const n = qr.getModuleCount(), pad = 14, cell = (QS_ - pad * 2) / n;
+    x.fillStyle = "#fff"; x.beginPath(); x.roundRect(QX, QY, QS_, QS_, 18); x.fill();
+    x.fillStyle = "#14213d";
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) x.fillRect(QX + pad + c * cell, QY + pad + r * cell, Math.ceil(cell), Math.ceil(cell));
+    x.fillStyle = "#cfe0f2"; x.font = "700 26px 'Noto Sans TC',sans-serif"; x.textAlign = "center"; x.fillText("掃碼上島", QX + QS_ / 2, QY + QS_ + 40); x.textAlign = "left";
+  }
   return cv.toDataURL("image/png");
 }
+const shareUrl = () => location.origin + location.pathname;
+// 分享先開面板：手機一鍵系統分享、直接傳 LINE、存圖（發 IG 限動／群組用）、複製連結；桌機沒有系統分享也有路可走
 async function share(text, img) {
-  const url = location.href;
-  try {
-    if (img && navigator.canShare) {
-      const file = new File([await (await fetch(img)).blob()], "island.png", {type: "image/png"});
-      if (navigator.canShare({files: [file]})) { await navigator.share({files: [file], text: `${text}\n${url}`}); return; }
-    }
-    if (navigator.share) { await navigator.share({title: D.island, text, url}); return; }
-  } catch (e) { if (e.name === "AbortError") return; }
-  try { await navigator.clipboard.writeText(`${text}\n${url}`); toast("已複製，貼給朋友吧"); } catch { prompt("複製這段分享給朋友：", `${text}\n${url}`); }
+  const url = shareUrl(), msg = `${text}\n${url}`;
+  img = img || await shareCard(`${fmt(members)} 位島民`, HAS_LOY ? `本週 ${fmt(last.a7)} 人上島・打卡 ${fmt(last.sub7)} 次` : `兩週內 ${fmt(C.active14)} 人一起聊天`);
+  const file = await fetch(img).then(r => r.blob()).then(b => new File([b], `${D.island}.png`, {type: "image/png"})).catch(() => null);
+  const sysOk = !!navigator.share;
+  openModal(`<div class="shbox"><p class="kicker">📤 分享</p><h2>把這座島傳出去</h2><img class="share-img" src="${img}" alt="分享圖">
+    <div class="shgrid">${sysOk ? `<button class="btn primary" id="shSys">📲 分享</button>` : ""}<a class="btn line" href="https://line.me/R/share?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">💬 傳到 LINE</a>
+    <a class="btn" href="${img}" download="${esc(D.island)}.png">💾 存圖片</a><button class="btn" id="shCopy">🔗 複製連結</button></div>
+    <p class="hint">存下圖片發到限動或群組，朋友掃 QR 就能上島。</p></div>`);
+  $("shCopy").onclick = async () => { try { await navigator.clipboard.writeText(msg); toast("已複製，貼給朋友吧"); } catch { prompt("複製這段分享給朋友：", msg); } };
+  if (sysOk) $("shSys").onclick = async () => {
+    try {
+      if (file && navigator.canShare?.({files: [file]})) await navigator.share({files: [file], text: msg});
+      else await navigator.share({title: D.island, text, url});
+    } catch (e) { if (e.name !== "AbortError") toast("這裡不能直接分享，改用下面的按鈕"); }
+  };
 }
 function toast(s) { const t = $("toast"); t.textContent = s; t.classList.add("on"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2200); }
 function burst() { window.confetti?.({particleCount: 110, spread: 75, origin: {y: .35}, zIndex: 80, colors: ["#ff8a3d", "#ffcf3f", "#e8412c", "#12a594", "#ffffff"]}); }
@@ -1173,7 +1222,7 @@ setTimeout(() => {
     <li><span>🎒</span><p><b>每天上島撿一樣寶</b>今天撿到 ${FINDS[daily.item][0]} ${FINDS[daily.item][1]}，連續來越撿得到稀有的。</p></li>
     <li><span>🧭</span><p><b>你是哪種島民？</b>三題小測驗，拿一張可以分享的身分卡。</p></li></ul>
     <button class="btn primary" data-close style="width:100%">開始逛 →</button></div>`);
-}, 900);
+}, 400);
 </script>
 </body>
 </html>
